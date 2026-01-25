@@ -1,20 +1,23 @@
 main {
+  min-height: 100dvh;
   min-width: 100vw;
   display: flex;
   flex-direction: column;
+  background-color: var(--tgui--tertiary_bg_color);
 }
 
 .headerContainer {
   background-color: var(--tgui--bg_color);
   z-index: 10;
-  padding: 20px;
+  padding: 40px 20px 20px 20px;
 }
 
 .stepContainer {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
-  background-color: var(--tgui--tertiary_bg_color);
+  margin: 20px;
+  padding-bottom: 120px;
 }
 
 .footerContainer {
@@ -25,5 +28,5 @@ main {
   z-index: 10;
 
   border-top: 1px solid var(--tgui--divider);
-  background-color: var(--tgui--quartenary_bg_color);
+  background-color: var(--tgui--bg_color);
 }
