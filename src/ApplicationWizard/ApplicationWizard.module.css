@@ -1,0 +1,29 @@
+main {
+  min-width: 100vw;
+  display: flex;
+  flex-direction: column;
+}
+
+.headerContainer {
+  background-color: var(--tgui--bg_color);
+  z-index: 10;
+  padding: 20px;
+}
+
+.stepContainer {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--tgui--tertiary_bg_color);
+}
+
+.footerContainer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+
+  border-top: 1px solid var(--tgui--divider);
+  background-color: var(--tgui--quartenary_bg_color);
+}

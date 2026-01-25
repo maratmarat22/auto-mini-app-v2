@@ -1,0 +1,26 @@
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.counter {
+  color: var(--tgui--hint_color);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.progressContainer {
+  height: 4px;
+  width: 100%;
+  background-color: var(--tgui--secondary_bg_color);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progressBar {
+  height: 100%;
+  background-color: var(--tgui--button_color);
+  transition: width 0.3s ease-in-out;
+}
