@@ -1,6 +1,6 @@
 import { Headline, Input, Button } from '@telegram-apps/telegram-ui';
 
-import { useWizardStore } from '../store/useWizardStore';
+import { useWizardStore } from '@/ApplicationWizard/store/useWizardStore';
 
 const budgetFormatter = new Intl.NumberFormat('ru-Ru', {
   style: 'currency',

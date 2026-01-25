@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 
+import { STEPS_CONFIG } from '../steps/stepsConfig';
+
 import type { WizardStore } from '@/ApplicationWizard/types/wizard';
 
 export const useWizardStore = create<WizardStore>((set) => ({
@@ -14,7 +16,7 @@ export const useWizardStore = create<WizardStore>((set) => ({
 
   nextStep: () =>
     set((state) => ({
-      step: Math.min(state.step + 1, 3),
+      step: Math.min(state.step + 1, STEPS_CONFIG.length),
     })),
 
   prevStep: () =>

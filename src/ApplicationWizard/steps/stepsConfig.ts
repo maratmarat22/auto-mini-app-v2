@@ -1,0 +1,11 @@
+interface StepData {
+  id: number;
+  label: string;
+  backButtonText: string | null;
+  nextButtonText: string;
+}
+
+export const STEPS_CONFIG: StepData[] = [
+  { id: 1, label: 'Старт', backButtonText: null, nextButtonText: 'Начать' },
+  { id: 2, label: 'Бюджет', backButtonText: 'Назад', nextButtonText: 'Далее' },
+];
