@@ -1,9 +1,8 @@
-main {
-  min-height: 100dvh;
-  min-width: 100vw;
+.mainContainer {
+  background-color: var(--tgui--tertiary_bg_color);
   display: flex;
   flex-direction: column;
-  background-color: var(--tgui--tertiary_bg_color);
+  min-height: 100dvh;
 }
 
 .headerContainer {
@@ -12,7 +11,7 @@ main {
   padding: 40px 20px 20px 20px;
 }
 
-.stepContainer {
+main {
   flex: 1;
   display: flex;
   flex-direction: column;
