@@ -3,12 +3,16 @@ import { Footer, Header } from './components';
 import { AutoStep, BudgetStep, HeroStep } from './steps';
 import { useWizardStore } from './store/useWizardStore';
 
-export const ApplicationWizard = () => {
+export const ApplicationWizard = ({ isMobile }: { isMobile: boolean }) => {
   const step = useWizardStore((state) => state.step);
 
   return (
     <div className={styles.mainContainer}>
-      <div className={styles.headerContainer}>
+      <div
+        className={
+          isMobile ? styles.headerContainerMobile : styles.headerContainer
+        }
+      >
         <Header />
       </div>
       <main>

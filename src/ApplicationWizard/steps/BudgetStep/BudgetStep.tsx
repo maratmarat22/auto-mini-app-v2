@@ -2,6 +2,8 @@ import { Headline, Input, Button } from '@telegram-apps/telegram-ui';
 
 import { useWizardStore } from '@/ApplicationWizard/store/useWizardStore';
 
+import styles from './BudgetStep.module.css';
+
 const budgetFormatter = new Intl.NumberFormat('ru-Ru', {
   style: 'currency',
   currency: 'RUB',
@@ -23,9 +25,7 @@ export const BudgetStep = () => {
 
   return (
     <div>
-      <header>
-        <Headline>Какой у вас бюджет?</Headline>
-      </header>
+      <Headline>Какой у вас бюджет?</Headline>
 
       <div>
         <Headline>{formattedBudget}</Headline>
@@ -38,6 +38,7 @@ export const BudgetStep = () => {
         placeholder="Например, 1 000 000"
         value={budget || ''}
         onChange={(e) => updateData({ budget: Number(e.target.value) })}
+        className={styles.input}
       />
 
       {/* Сетка пресетов (быстрый выбор) */}
