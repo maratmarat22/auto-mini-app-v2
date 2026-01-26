@@ -12,7 +12,12 @@ import type { WizardData } from '@/ApplicationWizard/types/wizard';
 type AutoSubstep = 'brand' | 'model' | 'bodyType' | null;
 
 export const AutoStep = () => {
-  const { data: wizardData, updateData } = useWizardStore();
+  const {
+    data: wizardData,
+    updateData,
+    onSubstep,
+    setOnSubstep,
+  } = useWizardStore();
   const [currentSubstep, setCurrentSubstep] = useState<AutoSubstep>(null);
 
   const handleSelect = (field: keyof WizardData, value: string) => {
@@ -22,6 +27,7 @@ export const AutoStep = () => {
       updateData({ [field]: value });
     }
     setCurrentSubstep(null);
+    setOnSubstep(false);
   };
 
   //: Loading data
@@ -54,15 +60,15 @@ export const AutoStep = () => {
   //     </div>
   //   );
 
-  if (currentSubstep === 'brand') {
+  if (onSubstep && currentSubstep === 'brand') {
     return <BrandSubstep onSelect={handleSelect} />;
   }
 
-  if (currentSubstep === 'model') {
+  if (onSubstep && currentSubstep === 'model') {
     return;
   }
 
-  if (currentSubstep === 'bodyType') {
+  if (onSubstep && currentSubstep === 'bodyType') {
     return;
   }
 
@@ -77,7 +83,10 @@ export const AutoStep = () => {
             <CircleArrowRight size={20} />
           )
         }
-        onClick={() => setCurrentSubstep('brand')}
+        onClick={() => {
+          setCurrentSubstep('brand');
+          setOnSubstep(true);
+        }}
       >
         {wizardData.brand ? `Марка: ${wizardData.brand}` : 'Выберите марку'}
       </Button>
@@ -90,8 +99,11 @@ export const AutoStep = () => {
             <CircleArrowRight size={20} />
           )
         }
-        mode={wizardData.brand ? 'filled' : 'bezeled'}
-        onClick={() => setCurrentSubstep('model')}
+        disabled={!wizardData.brand}
+        onClick={() => {
+          setCurrentSubstep('model');
+          setOnSubstep(true);
+        }}
       >
         {wizardData.model || 'Выберите модель'}
       </Button>
@@ -104,7 +116,10 @@ export const AutoStep = () => {
             <CircleArrowRight size={20} />
           )
         }
-        onClick={() => setCurrentSubstep('bodyType')}
+        onClick={() => {
+          setCurrentSubstep('bodyType');
+          setOnSubstep(true);
+        }}
       >
         {wizardData.bodyType || 'Выберите тип кузова'}
       </Button>

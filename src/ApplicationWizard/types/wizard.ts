@@ -8,10 +8,12 @@ export interface WizardData {
 
 export interface WizardStore {
   step: number;
+  onSubstep: boolean;
   data: WizardData;
 
   setStep: (step: number) => void;
   nextStep: () => void;
   prevStep: () => void;
   updateData: (data: Partial<WizardData>) => void;
+  setOnSubstep: (onSubstep: boolean) => void;
 }

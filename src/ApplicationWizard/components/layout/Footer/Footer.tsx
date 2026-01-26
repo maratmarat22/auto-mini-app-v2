@@ -6,29 +6,34 @@ import { useWizardStore } from '@/ApplicationWizard/store/useWizardStore';
 import styles from './Footer.module.css';
 
 export const Footer = () => {
-  const { step: currentStep, nextStep, prevStep, data } = useWizardStore();
-  const currentStepConfig = STEPS_CONFIG.find((s) => s.id === currentStep);
-  const nextStepAvailable = currentStepConfig?.isValid
-    ? currentStepConfig.isValid(data)
-    : true;
+  const {
+    step: currentStep,
+    nextStep,
+    prevStep,
+    data,
+    onSubstep,
+  } = useWizardStore();
+  const currentStepConfig = STEPS_CONFIG[currentStep - 1];
+  const isDataValid = currentStepConfig.isValid(data);
+  const canGoNext = isDataValid && !onSubstep;
 
   return (
     <footer>
-      {currentStep !== 1 && (
+      {(currentStep !== 1 || onSubstep) && (
         <Button onClick={prevStep} mode="gray" className={styles.backButton}>
-          {STEPS_CONFIG.find((step) => currentStep === step.id)
-            ?.backButtonText ?? 'null'}
+          {currentStepConfig.backButtonText ?? 'Back'}
         </Button>
       )}
-      <Button
-        disabled={!nextStepAvailable}
-        onClick={nextStep}
-        className={styles.nextButton}
-        mode={nextStepAvailable ? 'filled' : 'bezeled'}
-      >
-        {STEPS_CONFIG.find((step) => currentStep === step.id)?.nextButtonText ??
-          'null'}
-      </Button>
+      {!onSubstep && (
+        <Button
+          disabled={!canGoNext}
+          onClick={nextStep}
+          className={styles.nextButton}
+          mode={canGoNext ? 'filled' : 'bezeled'}
+        >
+          {currentStepConfig.nextButtonText ?? 'Next'}
+        </Button>
+      )}
     </footer>
   );
 };

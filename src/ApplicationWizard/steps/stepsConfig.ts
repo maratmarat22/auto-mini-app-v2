@@ -5,22 +5,41 @@ interface StepData {
   label: string;
   backButtonText: string | null;
   nextButtonText: string;
-  isValid?: (data: WizardData) => boolean;
+  isValid: (data: WizardData) => boolean;
 }
+
+const DEFAULT_STEP: Required<
+  Pick<StepData, 'backButtonText' | 'nextButtonText' | 'isValid'>
+> = {
+  backButtonText: 'Назад',
+  nextButtonText: 'Далее',
+  isValid: (_: WizardData) => true,
+};
 
 export const STEPS_CONFIG: StepData[] = [
   {
+    ...DEFAULT_STEP,
     id: 1,
     label: 'Старт',
     backButtonText: null,
     nextButtonText: 'Создать заявку',
   },
   {
+    ...DEFAULT_STEP,
     id: 2,
     label: 'Авто',
-    backButtonText: 'Назад',
-    nextButtonText: 'Далее',
     isValid: (data: WizardData) => !!data.brand,
   },
-  { id: 3, label: 'Бюджет', backButtonText: 'Назад', nextButtonText: 'Далее' },
+  {
+    ...DEFAULT_STEP,
+    id: 3,
+    label: 'Бюджет',
+  },
+  {
+    ...DEFAULT_STEP,
+    id: 4,
+    label: 'Отправка',
+    backButtonText: 'Назад',
+    nextButtonText: 'Отправить',
+  },
 ];

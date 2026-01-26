@@ -25,6 +25,10 @@
   letter-spacing: 0.5px;
 }
 
+.counterMobile {
+  display: none;
+}
+
 .progressContainer {
   height: 4px;
   width: 100%;

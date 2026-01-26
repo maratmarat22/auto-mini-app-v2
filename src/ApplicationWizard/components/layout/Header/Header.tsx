@@ -12,7 +12,10 @@ export const Header = ({ isMobile }: { isMobile: boolean }) => {
   return (
     <header className={isMobile ? styles.headerMobile : ''}>
       <div className={isMobile ? styles.infoMobile : styles.info}>
-        <Caption weight="2" className={styles.counter}>
+        <Caption
+          weight="2"
+          className={isMobile ? styles.counterMobile : styles.counter}
+        >
           ШАГ {currentStep} ИЗ {totalSteps}
         </Caption>
         <Headline weight="1">
