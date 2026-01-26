@@ -1,94 +1,113 @@
-import { useQuery } from '@tanstack/react-query';
-import {
-  Cell,
-  Input,
-  List,
-  Section,
-  Spinner,
-} from '@telegram-apps/telegram-ui';
-import { useMemo, useState } from 'react';
+import { Button } from '@telegram-apps/telegram-ui';
+import { CircleArrowRight, CircleCheck } from 'lucide-react';
+import { useState } from 'react';
 
-import { autoApi } from '@/ApplicationWizard/api/getAutoInfo';
 import { useWizardStore } from '@/ApplicationWizard/store/useWizardStore';
 
 import styles from './AutoStep.module.css';
+import { BrandSubstep } from './substeps/BrandSubstep/BrandSubstep';
+
+import type { WizardData } from '@/ApplicationWizard/types/wizard';
+
+type AutoSubstep = 'brand' | 'model' | 'bodyType' | null;
 
 export const AutoStep = () => {
   const { data: wizardData, updateData } = useWizardStore();
-  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [currentSubstep, setCurrentSubstep] = useState<AutoSubstep>(null);
+
+  const handleSelect = (field: keyof WizardData, value: string) => {
+    if (field === 'brand') {
+      updateData({ brand: value, model: null });
+    } else {
+      updateData({ [field]: value });
+    }
+    setCurrentSubstep(null);
+  };
 
   //: Loading data
-  const { data: brands, isLoading: brandsAreLoading } = useQuery({
-    queryKey: ['brands'],
-    queryFn: autoApi.getBrands,
-  });
-  const { data: models, isLoading: modelsAreLoading } = useQuery({
-    queryKey: ['models', wizardData.brand],
-    queryFn: () => autoApi.getModels(wizardData.brand!),
-    enabled: !!wizardData.brand,
-  });
+  // const { data: brands, isLoading: brandsAreLoading } = useQuery({
+  //   queryKey: ['brands'],
+  //   queryFn: autoApi.getBrands,
+  // });
+  // const { data: models, isLoading: modelsAreLoading } = useQuery({
+  //   queryKey: ['models', wizardData.brand],
+  //   queryFn: () => autoApi.getModels(wizardData.brand!),
+  //   enabled: !!wizardData.brand,
+  // });
+  // const { data: bodyTypes, isLoading: bodyTypesAreLoading } = useQuery({
+  //   queryKey: ['body-types'],
+  //   queryFn: autoApi.getBodyTypes,
+  // });
 
   //: Normalization
-  const filteredItems = useMemo(() => {
-    const currentList = !wizardData.brand ? brands : models;
-    return currentList?.filter((item) =>
-      item.name.toLowerCase().includes(searchQuery.toLowerCase()),
-    );
-  }, [searchQuery, brands, models, wizardData.brand]);
+  // const filteredItems = useMemo(() => {
+  //   const currentList = !wizardData.brand ? brands : models;
+  //   return currentList?.filter((item) =>
+  //     item.name.toLowerCase().includes(searchQuery.toLowerCase()),
+  //   );
+  // }, [searchQuery, brands, models, wizardData.brand]);
 
-  if (brandsAreLoading || modelsAreLoading)
-    return (
-      <div className={styles.spinnerContainer}>
-        <Spinner size="m" className={styles.spinner} />
-      </div>
-    );
+  // if (brandsAreLoading || modelsAreLoading || bodyTypesAreLoading)
+  //   return (
+  //     <div className={styles.spinnerContainer}>
+  //       <Spinner size="m" className={styles.spinner} />
+  //     </div>
+  //   );
+
+  if (currentSubstep === 'brand') {
+    return <BrandSubstep onSelect={handleSelect} />;
+  }
+
+  if (currentSubstep === 'model') {
+    return;
+  }
+
+  if (currentSubstep === 'bodyType') {
+    return;
+  }
 
   return (
-    <List>
-      <Input
-        header="Поиск"
-        placeholder={!wizardData.brand ? 'Например, BMW' : 'Например, X5'}
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        className={styles.autoInput}
-      />
-
-      {!wizardData.brand ? (
-        <Section header="Выберите марку">
-          {filteredItems!.map((b) => (
-            <Cell
-              key={b.id}
-              onClick={() => {
-                updateData({ brand: b.id, model: null });
-                setSearchQuery('');
-              }}
-            >
-              {b.name}
-            </Cell>
-          ))}
-        </Section>
-      ) : (
-        <Section header="Выберите модель">
-          <Cell
-            before="⬅️"
-            onClick={() => {
-              updateData({ brand: null, model: null });
-              setSearchQuery('');
-            }}
-          >
-            Назад к маркам
-          </Cell>
-          {filteredItems!.map((m) => (
-            <Cell
-              key={m.id}
-              after={wizardData.model === m.id ? '✅' : null}
-              onClick={() => updateData({ model: m.id })}
-            >
-              {m.name}
-            </Cell>
-          ))}
-        </Section>
-      )}
-    </List>
+    <div className={styles.menuContainer}>
+      <Button
+        className={styles.button}
+        after={
+          wizardData.brand ? (
+            <CircleCheck size={20} />
+          ) : (
+            <CircleArrowRight size={20} />
+          )
+        }
+        onClick={() => setCurrentSubstep('brand')}
+      >
+        {wizardData.brand ? `Марка: ${wizardData.brand}` : 'Выберите марку'}
+      </Button>
+      <Button
+        className={styles.button}
+        after={
+          wizardData.model ? (
+            <CircleCheck size={20} />
+          ) : (
+            <CircleArrowRight size={20} />
+          )
+        }
+        mode={wizardData.brand ? 'filled' : 'bezeled'}
+        onClick={() => setCurrentSubstep('model')}
+      >
+        {wizardData.model || 'Выберите модель'}
+      </Button>
+      <Button
+        className={styles.button}
+        after={
+          wizardData.bodyType ? (
+            <CircleCheck size={20} />
+          ) : (
+            <CircleArrowRight size={20} />
+          )
+        }
+        onClick={() => setCurrentSubstep('bodyType')}
+      >
+        {wizardData.bodyType || 'Выберите тип кузова'}
+      </Button>
+    </div>
   );
 };

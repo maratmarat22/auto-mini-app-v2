@@ -5,13 +5,13 @@ import { useWizardStore } from '@/ApplicationWizard/store/useWizardStore';
 
 import styles from './Header.module.css';
 
-export const Header = () => {
+export const Header = ({ isMobile }: { isMobile: boolean }) => {
   const currentStep = useWizardStore((state) => state.step);
   const totalSteps = STEPS_CONFIG.length;
 
   return (
-    <header className={styles.header}>
-      <div className={styles.info}>
+    <header className={isMobile ? styles.headerMobile : ''}>
+      <div className={isMobile ? styles.infoMobile : styles.info}>
         <Caption weight="2" className={styles.counter}>
           ШАГ {currentStep} ИЗ {totalSteps}
         </Caption>

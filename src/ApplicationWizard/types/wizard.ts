@@ -1,6 +1,7 @@
 export interface WizardData {
   brand: string | null;
   model: string | null;
+  bodyType: string | null;
 
   budget: number;
 }

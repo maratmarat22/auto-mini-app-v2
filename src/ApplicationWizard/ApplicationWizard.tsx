@@ -13,7 +13,7 @@ export const ApplicationWizard = ({ isMobile }: { isMobile: boolean }) => {
           isMobile ? styles.headerContainerMobile : styles.headerContainer
         }
       >
-        <Header />
+        <Header isMobile={isMobile} />
       </div>
       <main>
         {step === 1 && <HeroStep />}

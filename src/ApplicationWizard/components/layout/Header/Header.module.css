@@ -1,3 +1,17 @@
+.headerMobile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.infoMobile {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
 .info {
   display: flex;
   flex-direction: column;
