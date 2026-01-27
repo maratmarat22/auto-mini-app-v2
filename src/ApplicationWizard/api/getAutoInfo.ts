@@ -1,11 +1,11 @@
 import { api } from '@/api/instance';
 
-import { type Generation, type Brand, type Model } from '../types/wizard';
-
-interface BodyType {
-  id: number;
-  name: string;
-}
+import {
+  type Generation,
+  type Brand,
+  type Model,
+  type BodyType,
+} from '../types/wizard';
 
 export const autoApi = {
   getBrands: () => api.get<Brand[]>('/brands').then((res) => res.data),

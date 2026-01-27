@@ -1,5 +1,3 @@
-import { Button } from '@telegram-apps/telegram-ui';
-import { CircleArrowRight, CircleCheck } from 'lucide-react';
 import { useState } from 'react';
 
 import { useWizardStore } from '@/ApplicationWizard/store/useWizardStore';
@@ -10,7 +8,7 @@ import { SubstepButton } from './components/SubstepButton';
 import { useAutoQueries } from './hooks/useAutoQueries';
 import { SUBSTEP_CONFIG } from './substepsConfig';
 
-import type { AutoStepField } from './types/autoStepField';
+import type { AutoField, AutoSubstep } from './types/types';
 
 export const AutoStep = () => {
   const {
@@ -19,7 +17,7 @@ export const AutoStep = () => {
     onSubstep,
     setOnSubstep,
   } = useWizardStore();
-  const [currentSubstep, setCurrentSubstep] = useState<AutoStepField>(null);
+  const [currentSubstep, setCurrentSubstep] = useState<AutoSubstep>(null);
 
   const autoQueries = useAutoQueries();
   const autoQueriesMap = {
@@ -35,10 +33,14 @@ export const AutoStep = () => {
       list: autoQueries.generations,
       isLoading: autoQueries.generationsAreLoading,
     },
+    bodyType: {
+      list: autoQueries.bodyTypes,
+      isLoading: autoQueries.bodyTypesAreLoading,
+    },
   };
 
   const handleSelect = (
-    field: AutoStepField,
+    field: AutoField,
     item: { id: string; name: string },
   ) => {
     if (field === 'brand') {
@@ -55,6 +57,10 @@ export const AutoStep = () => {
     } else if (field === 'generation') {
       updateData({
         generation: item,
+      });
+    } else if (field === 'bodyType') {
+      updateData({
+        bodyType: item,
       });
     }
 
@@ -95,23 +101,6 @@ export const AutoStep = () => {
           />
         );
       })}
-
-      <Button
-        className={styles.button}
-        mode={wizardData.bodyType ? 'filled' : 'bezeled'}
-        after={
-          wizardData.bodyType ? (
-            <CircleCheck size={20} />
-          ) : (
-            <CircleArrowRight size={20} />
-          )
-        }
-        onClick={() => {
-          setOnSubstep(true);
-        }}
-      >
-        {wizardData.bodyType || 'Выберите тип кузова'}
-      </Button>
     </div>
   );
 };

@@ -5,13 +5,13 @@ import { CenterSpinner } from '@/ApplicationWizard/components/CenterSpinner/Cent
 
 import styles from './SelectSubstep.module.css';
 
-import type { AutoStepField } from '../types/autoStepField';
+import type { AutoField } from '../types/types';
 
 interface SelectSubstepProps {
   list: { id: string; name: string }[] | undefined;
   isLoading: boolean;
-  onSelect: (field: AutoStepField, value: { id: string; name: string }) => void;
-  targetField: AutoStepField;
+  onSelect: (field: AutoField, value: { id: string; name: string }) => void;
+  targetField: AutoField;
   header: string;
   placeholder: string;
 }

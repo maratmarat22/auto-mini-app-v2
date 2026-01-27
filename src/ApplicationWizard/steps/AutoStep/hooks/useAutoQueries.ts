@@ -25,6 +25,11 @@ export const useAutoQueries = () => {
     enabled: !!wizardData.model,
   });
 
+  const { data: bodyTypes, isLoading: bodyTypesAreLoading } = useQuery({
+    queryKey: ['body-types'],
+    queryFn: autoApi.getBodyTypes,
+  });
+
   // Автовыбор если элемент один
   useEffect(() => {
     if (models?.length === 1 && !modelsAreLoading) {
@@ -45,5 +50,7 @@ export const useAutoQueries = () => {
     modelsAreLoading,
     generations,
     generationsAreLoading,
+    bodyTypes,
+    bodyTypesAreLoading,
   };
 };

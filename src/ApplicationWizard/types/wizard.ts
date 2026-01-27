@@ -13,10 +13,15 @@ export type Generation = {
   name: string;
 };
 
+export type BodyType = {
+  id: string;
+  name: string;
+};
+
 export interface WizardData {
   brand: Brand | null;
   model: Model | null;
-  bodyType: string | null;
+  bodyType: BodyType | null;
   generation: Generation | null;
 
   budget: number;

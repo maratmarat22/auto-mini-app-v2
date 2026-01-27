@@ -26,4 +26,13 @@ export const SUBSTEP_CONFIG = [
         : 'Выберите поколение',
     showIf: (data: WizardData) => !!data.model,
   },
+  {
+    field: 'bodyType' as const,
+    header: 'Выберите тип кузова',
+    placeholder: 'Например, кроссовер',
+    getLabel: (data: WizardData) =>
+      data.bodyType
+        ? `Тип кузова: ${data.bodyType.name}`
+        : 'Выберите тип кузова',
+  },
 ];
