@@ -1,58 +1,83 @@
-import { Headline, Input, Button } from '@telegram-apps/telegram-ui';
+import {
+  Headline,
+  Subheadline,
+  Input,
+  Button,
+  Text,
+} from '@telegram-apps/telegram-ui';
+import { RussianRuble, Wallet } from 'lucide-react';
 
 import { useWizardStore } from '@/ApplicationWizard/store/useWizardStore';
 
 import styles from './BudgetStep.module.css';
 
-const budgetFormatter = new Intl.NumberFormat('ru-Ru', {
-  style: 'currency',
-  currency: 'RUB',
+const budgetFormatter = new Intl.NumberFormat('ru-RU', {
+  style: 'decimal',
   maximumFractionDigits: 0,
 });
 
 const BUDGET_PRESETS = [
-  { label: '500к', value: 500000 },
-  { label: '1.5м', value: 1500000 },
-  { label: '3м', value: 3000000 },
-  { label: '5м', value: 5000000 },
+  { label: '500 000 ₽', value: 500000 },
+  { label: '1.5 млн ₽', value: 1500000 },
+  { label: '3 млн ₽', value: 3000000 },
+  { label: '5 млн ₽', value: 5000000 },
 ];
 
 export const BudgetStep = () => {
   const budget = useWizardStore((state) => state.data.budget);
   const updateData = useWizardStore((state) => state.updateData);
 
-  const formattedBudget = budgetFormatter.format(budget);
+  const displayValue = budget ? budgetFormatter.format(budget) : '';
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const rawValue = e.target.value.replace(/\D/g, '');
+    const numericValue = rawValue ? Number(rawValue) : 0;
+    updateData({ budget: numericValue });
+  };
 
   return (
-    <div>
-      <Headline>Какой у вас бюджет?</Headline>
-
-      <div>
-        <Headline>{formattedBudget}</Headline>
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <div className={styles.iconCircle}>
+          <Wallet size={28} className={styles.mainIcon} />
+        </div>
+        <Headline weight="1">Планируемый бюджет</Headline>
+        <Subheadline className={styles.description}>
+          Укажите ваш бюджет. <br />
+          <b>Расчет ведется строго в рублях (₽).</b>
+        </Subheadline>
       </div>
 
-      <Input
-        header="Сумма в рублях"
-        type="number"
-        inputMode="numeric"
-        placeholder="Например, 1 000 000"
-        value={budget || ''}
-        onChange={(e) => updateData({ budget: Number(e.target.value) })}
-        className={styles.input}
-      />
+      <div className={styles.inputWrapper}>
+        <Input
+          header="Ваш бюджет"
+          type="text"
+          inputMode="numeric"
+          placeholder="Например, 1 500 000"
+          value={displayValue}
+          onChange={handleChange}
+          className={styles.input}
+          after={<RussianRuble size={20} className={styles.rubleIcon} />}
+        />
+      </div>
 
-      {/* Сетка пресетов (быстрый выбор) */}
-      <div>
-        {BUDGET_PRESETS.map((preset) => (
-          <Button
-            key={preset.value}
-            mode={budget === preset.value ? 'filled' : 'bezeled'}
-            size="m"
-            onClick={() => updateData({ budget: preset.value })}
-          >
-            {preset.label}
-          </Button>
-        ))}
+      <div className={styles.presetsSection}>
+        <Text weight="2" className={styles.presetsLabel}>
+          Быстрый выбор:
+        </Text>
+        <div className={styles.presetsGrid}>
+          {BUDGET_PRESETS.map((preset) => (
+            <Button
+              key={preset.value}
+              mode={budget === preset.value ? 'filled' : 'bezeled'}
+              size="l"
+              onClick={() => updateData({ budget: preset.value })}
+              className={styles.presetBtn}
+            >
+              {preset.label}
+            </Button>
+          ))}
+        </div>
       </div>
     </div>
   );

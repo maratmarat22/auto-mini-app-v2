@@ -1,3 +1,86 @@
+.container {
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+}
+
+.iconCircle {
+  width: 64px;
+  height: 64px;
+  background-color: var(--tgui--accent_text_color);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+  opacity: 0.9;
+}
+
+.mainIcon {
+  color: #fff;
+}
+
+.description {
+  color: var(--tgui--subtitle_text_color);
+  line-height: 1.4;
+}
+
+.inputWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .input {
-  background-color: var(--tgui--tertiary_bg_color);
+  background-color: var(--tgui--secondary_bg_color);
+  border: 1px solid var(--tgui--separator_color);
+  border-radius: 16px;
+  transition: border-color 0.2s ease;
+}
+
+.input:focus-within {
+  border-color: var(--tgui--button_color);
+}
+
+.rubleIcon {
+  color: var(--tgui--button_color);
+  margin-right: 8px;
+}
+
+.hint {
+  font-size: 12px;
+  color: var(--tgui--hint_color);
+  padding-left: 12px;
+}
+
+.presetsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.presetsLabel {
+  color: var(--tgui--section_header_text_color);
+  font-size: 14px;
+  padding-left: 4px;
+}
+
+.presetsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.presetBtn {
+  --tgui--button_radius: 12px;
+  font-weight: 600;
 }
