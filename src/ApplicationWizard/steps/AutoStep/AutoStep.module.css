@@ -7,6 +7,11 @@
   flex-direction: column;
 }
 
+.buttonContainer {
+  position: relative;
+  width: 300px;
+}
+
 .button {
   width: 300px;
   display: flex !important;
@@ -14,4 +19,37 @@
   align-items: center;
   padding: 0 16px !important;
   height: 48px;
+}
+
+/* Обертка для иконки удаления */
+.xIconWrapper {
+  position: absolute;
+  /* Выравниваем точно там, где находится проп 'after' у кнопки */
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  color: #ffe600;
+
+  /* Скрываем по умолчанию */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+
+  /* Фон, чтобы перекрыть иконку check под ней */
+  background: red;
+  border-radius: 15px;
+  height: 24px;
+  width: 24px;
+}
+
+/* При наведении на весь контейнер — показываем крестик */
+.buttonContainer:hover .xIconWrapper {
+  opacity: 1;
+  pointer-events: auto;
 }

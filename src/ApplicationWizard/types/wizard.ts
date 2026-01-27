@@ -1,6 +1,16 @@
+type Brand = {
+  id: string;
+  name: string;
+};
+
+type Model = {
+  id: string;
+  name: string;
+};
+
 export interface WizardData {
-  brand: string | null;
-  model: string | null;
+  brand: Brand | null;
+  model: Model | null;
   bodyType: string | null;
 
   budget: number;

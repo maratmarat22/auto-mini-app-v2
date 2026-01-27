@@ -13,24 +13,28 @@ import { useWizardStore } from '@/ApplicationWizard/store/useWizardStore';
 
 import type { WizardData } from '@/ApplicationWizard/types/wizard';
 
-export const BrandSubstep = ({
+export const ModelSubstep = ({
   onSelect,
 }: {
-  onSelect: (field: keyof WizardData, value: string) => void;
+  onSelect: (field: keyof WizardData, value: string, label: string) => void;
 }) => {
   const { data: wizardData } = useWizardStore();
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const { data: brands, isLoading: brandsAreLoading } = useQuery({
-    queryKey: ['brands'],
-    queryFn: autoApi.getBrands,
+  const { data: models, isLoading: modelsAreLoading } = useQuery({
+    queryKey: ['models', wizardData.brand],
+    queryFn: () => autoApi.getModels(wizardData.brand!.id),
+    enabled: !!wizardData.brand,
   });
-  const filteredBrands = useMemo(() => {
-    return brands?.filter((b) =>
-      b.name.toLowerCase().includes(searchQuery.toLowerCase()),
-    );
-  }, [searchQuery, brands]);
 
-  if (brandsAreLoading)
+  console.log(models);
+
+  const filteredModels = useMemo(() => {
+    return models?.filter((m) =>
+      m.name.toLowerCase().includes(searchQuery.toLowerCase()),
+    );
+  }, [searchQuery, models]);
+
+  if (modelsAreLoading)
     return (
       <div className="spinnerContainer">
         <Spinner size="m" />
@@ -41,15 +45,15 @@ export const BrandSubstep = ({
     <List>
       <Input
         header="Поиск"
-        placeholder={!wizardData.brand ? 'Например, BMW' : 'Например, X5'}
+        placeholder={'Например, X5'}
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
       />
 
-      <Section header="Выберите марку">
-        {filteredBrands?.map((b) => (
-          <Cell key={b.id} onClick={() => onSelect('brand', b.name)}>
-            {b.name}
+      <Section header="Выберите модель">
+        {filteredModels?.map((m) => (
+          <Cell key={m.id} onClick={() => onSelect('model', m.id, m.name)}>
+            {m.name}
           </Cell>
         ))}
       </Section>

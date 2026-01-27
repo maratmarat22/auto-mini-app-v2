@@ -29,7 +29,6 @@ export const Footer = () => {
           disabled={!canGoNext}
           onClick={nextStep}
           className={styles.nextButton}
-          mode={canGoNext ? 'filled' : 'bezeled'}
         >
           {currentStepConfig.nextButtonText ?? 'Next'}
         </Button>
