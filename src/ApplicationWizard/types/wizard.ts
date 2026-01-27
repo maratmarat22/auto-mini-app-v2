@@ -1,9 +1,14 @@
-type Brand = {
+export type Brand = {
   id: string;
   name: string;
 };
 
-type Model = {
+export type Model = {
+  id: string;
+  name: string;
+};
+
+export type Generation = {
   id: string;
   name: string;
 };
@@ -12,6 +17,7 @@ export interface WizardData {
   brand: Brand | null;
   model: Model | null;
   bodyType: string | null;
+  generation: Generation | null;
 
   budget: number;
 }

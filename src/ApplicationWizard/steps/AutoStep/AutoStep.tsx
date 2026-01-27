@@ -1,16 +1,16 @@
 import { Button } from '@telegram-apps/telegram-ui';
-import { CircleArrowRight, CircleCheck, CircleX } from 'lucide-react';
+import { CircleArrowRight, CircleCheck } from 'lucide-react';
 import { useState } from 'react';
 
 import { useWizardStore } from '@/ApplicationWizard/store/useWizardStore';
 
 import styles from './AutoStep.module.css';
-import { BrandSubstep } from './substeps/BrandSubstep';
-import { ModelSubstep } from './substeps/ModelSubstep';
+import { SelectSubstep } from './components/SelectSubstep';
+import { SubstepButton } from './components/SubstepButton';
+import { useAutoQueries } from './hooks/useAutoQueries';
+import { SUBSTEP_CONFIG } from './substepsConfig';
 
-import type { WizardData } from '@/ApplicationWizard/types/wizard';
-
-type AutoSubstep = 'brand' | 'model' | 'bodyType' | null;
+import type { AutoStepField } from './types/autoStepField';
 
 export const AutoStep = () => {
   const {
@@ -19,93 +19,83 @@ export const AutoStep = () => {
     onSubstep,
     setOnSubstep,
   } = useWizardStore();
-  const [currentSubstep, setCurrentSubstep] = useState<AutoSubstep>(null);
+  const [currentSubstep, setCurrentSubstep] = useState<AutoStepField>(null);
+
+  const autoQueries = useAutoQueries();
+  const autoQueriesMap = {
+    brand: {
+      list: autoQueries.brands,
+      isLoading: autoQueries.brandsAreLoading,
+    },
+    model: {
+      list: autoQueries.models,
+      isLoading: autoQueries.modelsAreLoading,
+    },
+    generation: {
+      list: autoQueries.generations,
+      isLoading: autoQueries.generationsAreLoading,
+    },
+  };
 
   const handleSelect = (
-    field: keyof WizardData,
-    value: string,
-    label: string,
+    field: AutoStepField,
+    item: { id: string; name: string },
   ) => {
     if (field === 'brand') {
-      updateData({ brand: { id: value, name: label }, model: null });
-    } else {
-      updateData({ [field]: { id: value, name: label } });
+      updateData({
+        brand: item,
+        model: null,
+        generation: null,
+      });
+    } else if (field === 'model') {
+      updateData({
+        model: item,
+        generation: null,
+      });
+    } else if (field === 'generation') {
+      updateData({
+        generation: item,
+      });
     }
+
     setCurrentSubstep(null);
     setOnSubstep(false);
   };
 
-  if (onSubstep && currentSubstep === 'brand') {
-    return <BrandSubstep onSelect={handleSelect} />;
-  }
+  if (onSubstep && currentSubstep) {
+    const config = SUBSTEP_CONFIG.find((s) => s.field === currentSubstep);
+    const { list, isLoading } = autoQueriesMap[currentSubstep];
 
-  if (onSubstep && currentSubstep === 'model') {
-    return <ModelSubstep onSelect={handleSelect} />;
-  }
-
-  if (onSubstep && currentSubstep === 'bodyType') {
-    return;
+    return (
+      <SelectSubstep
+        list={list}
+        isLoading={isLoading}
+        onSelect={handleSelect}
+        targetField={currentSubstep}
+        header={config?.header || ''}
+        placeholder={config?.placeholder || ''}
+      />
+    );
   }
 
   return (
     <div className={styles.menuContainer}>
-      <div className={styles.buttonContainer}>
-        <Button
-          className={styles.button}
-          mode={wizardData.brand ? 'filled' : 'bezeled'}
-          after={
-            // Здесь всегда стандартные иконки, они просто будут перекрываться
-            wizardData.brand ? (
-              <CircleCheck size={20} />
-            ) : (
-              <CircleArrowRight size={20} />
-            )
-          }
-          onClick={() => {
-            setCurrentSubstep('brand');
-            setOnSubstep(true);
-          }}
-        >
-          {wizardData.brand
-            ? `Марка: ${wizardData.brand.name}`
-            : 'Выберите марку'}
-        </Button>
+      {SUBSTEP_CONFIG.map((config) => {
+        if (config.showIf && !config.showIf(wizardData)) return null;
 
-        {/* Иконка удаления появляется ПОВЕРХ иконки after при наведении */}
-        {wizardData.brand && (
-          <div
-            className={styles.xIconWrapper}
-            onClick={(e) => {
-              e.stopPropagation(); // ОСТАНАВЛИВАЕМ клик, чтобы не открылось меню
-              updateData({ brand: null, model: null });
+        return (
+          <SubstepButton
+            key={config.field}
+            value={wizardData[config.field]}
+            onClick={() => {
+              setCurrentSubstep(config.field);
+              setOnSubstep(true);
             }}
-          >
-            <CircleX size={20} />
-          </div>
-        )}
-      </div>
-      <Button
-        className={styles.button}
-        after={
-          wizardData.model ? (
-            <CircleCheck size={20} />
-          ) : (
-            <CircleArrowRight size={20} />
-          )
-        }
-        disabled={!wizardData.brand}
-        mode={
-          wizardData.brand ? (wizardData.model ? 'filled' : 'bezeled') : 'gray'
-        }
-        onClick={() => {
-          setCurrentSubstep('model');
-          setOnSubstep(true);
-        }}
-      >
-        {wizardData.model
-          ? `Модель: ${wizardData.model.name}`
-          : 'Выберите модель'}
-      </Button>
+            text={config.getLabel(wizardData)}
+          />
+        );
+      })}
+
       <Button
         className={styles.button}
         mode={wizardData.bodyType ? 'filled' : 'bezeled'}
@@ -117,7 +107,6 @@ export const AutoStep = () => {
           )
         }
         onClick={() => {
-          setCurrentSubstep('bodyType');
           setOnSubstep(true);
         }}
       >

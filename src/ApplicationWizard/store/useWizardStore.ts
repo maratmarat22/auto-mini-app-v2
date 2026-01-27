@@ -12,6 +12,7 @@ export const useWizardStore = create<WizardStore>((set) => ({
     brand: null,
     model: null,
     bodyType: null,
+    generation: null,
   },
 
   setStep: (step) => set({ step }),
@@ -41,6 +42,12 @@ export const useWizardStore = create<WizardStore>((set) => ({
     set({
       step: 1,
       onSubstep: false,
-      data: { budget: 0, brand: null, model: null, bodyType: null },
+      data: {
+        budget: 0,
+        brand: null,
+        model: null,
+        bodyType: null,
+        generation: null,
+      },
     }),
 }));

@@ -13,26 +13,26 @@ import { useWizardStore } from '@/ApplicationWizard/store/useWizardStore';
 
 import type { WizardData } from '@/ApplicationWizard/types/wizard';
 
-export const ModelSubstep = ({
+export const GenerationSubstep = ({
   onSelect,
 }: {
   onSelect: (field: keyof WizardData, value: string, label: string) => void;
 }) => {
   const { data: wizardData } = useWizardStore();
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const { data: models, isLoading } = useQuery({
-    queryKey: ['models', wizardData.brand],
-    queryFn: () => autoApi.getModels(wizardData.brand!.id),
-    enabled: !!wizardData.brand,
+  const { data, isLoading } = useQuery({
+    queryKey: ['generations', wizardData.model],
+    queryFn: () => autoApi.getGenerations(wizardData.model!.id),
+    enabled: !!wizardData.model,
   });
 
-  console.log(models);
+  console.log(data);
 
-  const filteredModels = useMemo(() => {
-    return models?.filter((m) =>
-      m.name.toLowerCase().includes(searchQuery.toLowerCase()),
+  const generations = useMemo(() => {
+    return data?.filter((g) =>
+      g.name.toLowerCase().includes(searchQuery.toLowerCase()),
     );
-  }, [searchQuery, models]);
+  }, [searchQuery, data]);
 
   if (isLoading)
     return (
@@ -51,9 +51,9 @@ export const ModelSubstep = ({
       />
 
       <Section header="Выберите модель">
-        {filteredModels?.map((m) => (
-          <Cell key={m.id} onClick={() => onSelect('model', m.id, m.name)}>
-            {m.name}
+        {generations?.map((g) => (
+          <Cell key={g.id} onClick={() => onSelect('generation', g.id, g.name)}>
+            {g.name}
           </Cell>
         ))}
       </Section>
