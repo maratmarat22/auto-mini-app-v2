@@ -13,6 +13,11 @@ export type Generation = {
   name: string;
 };
 
+export type Configuration = {
+  id: string;
+  name: string;
+};
+
 export type BodyType = {
   id: string;
   name: string;
@@ -21,9 +26,10 @@ export type BodyType = {
 export interface WizardData {
   brand: Brand | null;
   model: Model | null;
-  bodyType: BodyType | null;
   generation: Generation | null;
+  configuration: Configuration | null;
 
+  bodyType: BodyType | null;
   budget: number;
 }
 

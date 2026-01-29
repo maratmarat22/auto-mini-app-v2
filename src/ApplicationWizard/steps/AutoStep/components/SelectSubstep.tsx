@@ -10,7 +10,10 @@ import type { AutoField } from '../types/types';
 interface SelectSubstepProps {
   list: { id: string; name: string }[] | undefined;
   isLoading: boolean;
-  onSelect: (field: AutoField, value: { id: string; name: string }) => void;
+  onSelect: (
+    field: AutoField,
+    value: { id: string; name: string } | null,
+  ) => void;
   targetField: AutoField;
   header: string;
   placeholder: string;
@@ -44,6 +47,7 @@ export const SelectSubstep = ({
       />
 
       <Section header={header}>
+        <Cell onClick={() => onSelect(targetField, null)}>Очистить</Cell>
         {filteredList?.map((b) => (
           <Cell
             key={b.id}

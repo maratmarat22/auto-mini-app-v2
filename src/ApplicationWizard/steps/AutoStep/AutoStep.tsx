@@ -4,7 +4,7 @@ import {
   Headline,
   Subheadline,
 } from '@telegram-apps/telegram-ui';
-import { Info, Car } from 'lucide-react';
+import { Info, CarFront } from 'lucide-react';
 import { useState } from 'react';
 
 import { useWizardStore } from '@/ApplicationWizard/store/useWizardStore';
@@ -14,6 +14,8 @@ import { SelectSubstep } from './components/SelectSubstep';
 import { SubstepButton } from './components/SubstepButton';
 import { useAutoQueries } from './hooks/useAutoQueries';
 import { SUBSTEP_CONFIG } from './substepsConfig';
+
+import '../steps.css';
 
 import type { AutoField, AutoSubstep } from './types/types';
 
@@ -28,7 +30,7 @@ export const AutoStep = () => {
 
   const isStepValid = !!(wizardData.brand || wizardData.bodyType);
 
-  const autoQueries = useAutoQueries();
+  const autoQueries = useAutoQueries(currentSubstep);
   const autoQueriesMap = {
     brand: {
       list: autoQueries.brands,
@@ -42,6 +44,10 @@ export const AutoStep = () => {
       list: autoQueries.generations,
       isLoading: autoQueries.generationsAreLoading,
     },
+    configuration: {
+      list: autoQueries.configurations,
+      isLoading: autoQueries.configurationsAreLoading,
+    },
     bodyType: {
       list: autoQueries.bodyTypes,
       isLoading: autoQueries.bodyTypesAreLoading,
@@ -50,18 +56,25 @@ export const AutoStep = () => {
 
   const handleSelect = (
     field: AutoField,
-    item: { id: string; name: string },
+    item: { id: string; name: string } | null,
   ) => {
     if (field === 'brand') {
-      updateData({ brand: item, model: null, generation: null });
+      if (wizardData.brand?.id !== item?.id)
+        updateData({ brand: item, model: null, generation: null });
     } else if (field === 'model') {
-      updateData({ model: item, generation: null });
+      if (wizardData.model?.id !== item?.id)
+        updateData({ model: item, generation: null });
     } else if (field === 'generation') {
-      updateData({ generation: item });
+      if (wizardData.generation?.id !== item?.id)
+        updateData({ generation: item });
     } else if (field === 'bodyType') {
-      updateData({ bodyType: item });
+      updateData({
+        brand: null,
+        model: null,
+        generation: null,
+        bodyType: item,
+      });
     }
-    setCurrentSubstep(null);
     setOnSubstep(false);
   };
 
@@ -83,19 +96,17 @@ export const AutoStep = () => {
 
   return (
     <div className={styles.menuContainer}>
-      {/* Верхний блок: Иконка и заголовок */}
-      <div className={styles.header}>
-        <div className={styles.iconCircle}>
-          <Car size={32} className={styles.mainIcon} />
+      <div className="stepHeader">
+        <div className="stepIcon">
+          <CarFront size={32} className={styles.mainIcon} />
         </div>
         <Headline weight="1">Параметры авто</Headline>
-        <Subheadline className={styles.description}>
+        <Subheadline className="stepDesc">
           Уточните базовую информацию об автомобиле, чтобы мы подобрали лучшие
-          варианты
+          варианты.
         </Subheadline>
       </div>
 
-      {/* Список кнопок выбора */}
       <div className={styles.buttonsList}>
         {SUBSTEP_CONFIG.map((config) => {
           if (config.showIf && !config.showIf(wizardData)) return null;
@@ -114,7 +125,6 @@ export const AutoStep = () => {
         })}
       </div>
 
-      {/* Нижний блок: Подсказка */}
       <div
         className={`${styles.footerHint} ${isStepValid ? styles.hintValid : ''}`}
       >

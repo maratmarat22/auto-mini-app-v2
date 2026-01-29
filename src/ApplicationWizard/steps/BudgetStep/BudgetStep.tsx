@@ -37,12 +37,12 @@ export const BudgetStep = () => {
 
   return (
     <div className={styles.container}>
-      <div className={styles.header}>
-        <div className={styles.iconCircle}>
-          <Wallet size={28} className={styles.mainIcon} />
+      <div className="stepHeader">
+        <div className="stepIcon">
+          <Wallet size={32} className={styles.mainIcon} />
         </div>
         <Headline weight="1">Планируемый бюджет</Headline>
-        <Subheadline className={styles.description}>
+        <Subheadline className="stepDesc">
           Укажите ваш бюджет. <br />
           <b>Расчет ведется строго в рублях (₽).</b>
         </Subheadline>
