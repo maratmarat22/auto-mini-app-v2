@@ -58,23 +58,24 @@ export const AutoStep = () => {
     field: AutoField,
     item: { id: string; name: string } | null,
   ) => {
-    if (field === 'brand') {
-      if (wizardData.brand?.id !== item?.id)
-        updateData({ brand: item, model: null, generation: null });
-    } else if (field === 'model') {
-      if (wizardData.model?.id !== item?.id)
-        updateData({ model: item, generation: null });
-    } else if (field === 'generation') {
-      if (wizardData.generation?.id !== item?.id)
-        updateData({ generation: item });
-    } else if (field === 'bodyType') {
-      updateData({
-        brand: null,
-        model: null,
-        generation: null,
-        bodyType: item,
-      });
-    }
+    const isChanged = wizardData[field]?.id !== item?.id;
+
+    const updates: Record<AutoField, () => void> = {
+      brand: () =>
+        isChanged && updateData({ brand: item, model: null, generation: null }),
+      model: () => isChanged && updateData({ model: item, generation: null }),
+      generation: () => isChanged && updateData({ generation: item }),
+      configuration: () => isChanged && updateData({ configuration: item }),
+      bodyType: () =>
+        updateData({
+          bodyType: item,
+          brand: null,
+          model: null,
+          generation: null,
+        }),
+    };
+
+    updates[field]?.();
     setOnSubstep(false);
   };
 

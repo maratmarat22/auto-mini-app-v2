@@ -6,7 +6,7 @@ import { useWizardStore } from '@/ApplicationWizard/store/useWizardStore';
 
 import type { AutoSubstep } from '../types/types';
 
-export const useAutoQueries = (currentSubstep: AutoSubstep) => {
+export const useAutoQueries = (_currentSubstep: AutoSubstep) => {
   const { data: wizardData, updateData } = useWizardStore();
 
   const { data: brands, isLoading: brandsAreLoading } = useQuery({
@@ -14,7 +14,6 @@ export const useAutoQueries = (currentSubstep: AutoSubstep) => {
     queryFn: () => {
       return autoApi.getBrands({ bodyTypeId: wizardData.bodyType?.id });
     },
-    enabled: currentSubstep === 'brand',
   });
 
   const { data: models, isLoading: modelsAreLoading } = useQuery({
@@ -24,7 +23,7 @@ export const useAutoQueries = (currentSubstep: AutoSubstep) => {
         brandId: wizardData.brand!.id,
         bodyTypeId: wizardData.bodyType?.id,
       }),
-    enabled: currentSubstep === 'model' || currentSubstep === 'brand',
+    enabled: !!wizardData.brand,
   });
 
   const { data: generations, isLoading: generationsAreLoading } = useQuery({
@@ -34,13 +33,7 @@ export const useAutoQueries = (currentSubstep: AutoSubstep) => {
         modelId: wizardData.model!.id,
         bodyTypeId: wizardData.bodyType?.id,
       }),
-    enabled: currentSubstep === 'generation',
-  });
-
-  const { data: bodyTypes, isLoading: bodyTypesAreLoading } = useQuery({
-    queryKey: ['body-types'],
-    queryFn: autoApi.getBodyTypes,
-    enabled: currentSubstep === 'bodyType',
+    enabled: !!wizardData.model,
   });
 
   const { data: configurations, isLoading: configurationsAreLoading } =
@@ -48,8 +41,13 @@ export const useAutoQueries = (currentSubstep: AutoSubstep) => {
       queryKey: ['configurations', wizardData.generation?.id],
       queryFn: () =>
         autoApi.getConfigurations({ generationId: wizardData.generation!.id }),
-      enabled: currentSubstep === 'configuration',
+      enabled: !!wizardData.generation,
     });
+
+  const { data: bodyTypes, isLoading: bodyTypesAreLoading } = useQuery({
+    queryKey: ['body-types'],
+    queryFn: autoApi.getBodyTypes,
+  });
 
   useEffect(() => {
     if (models?.length === 1 && !modelsAreLoading) {
@@ -64,10 +62,10 @@ export const useAutoQueries = (currentSubstep: AutoSubstep) => {
   }, [generations, generationsAreLoading, updateData]);
 
   useEffect(() => {
-    if (bodyTypes?.length === 1 && !bodyTypesAreLoading) {
-      updateData({ generation: bodyTypes[0] });
+    if (configurations?.length === 1 && !configurationsAreLoading) {
+      updateData({ configuration: configurations[0] });
     }
-  }, [bodyTypes, bodyTypesAreLoading, updateData]);
+  }, [configurations, configurationsAreLoading, updateData]);
 
   return {
     brands,
