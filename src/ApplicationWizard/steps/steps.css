@@ -1,3 +1,14 @@
+.stepContainer {
+  margin: 0 auto;
+  padding-top: 24px;
+
+  display: flex;
+  flex-direction: column;
+
+  max-width: 600px;
+  gap: 36px;
+}
+
 .stepHeader {
   display: flex;
   flex-direction: column;
@@ -10,6 +21,7 @@
   width: 64px;
   height: 64px;
   background-color: var(--tgui--accent_text_color);
+  color: #fff;
   border-radius: 50%;
   display: flex;
   align-items: center;

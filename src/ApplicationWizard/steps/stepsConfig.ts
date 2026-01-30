@@ -33,11 +33,17 @@ export const STEPS_CONFIG: StepData[] = [
   {
     ...DEFAULT_STEP,
     id: 3,
-    label: 'Бюджет',
+    label: 'Комментарий',
   },
   {
     ...DEFAULT_STEP,
     id: 4,
+    label: 'Бюджет',
+    isValid: (data: WizardData) => data.budget > 0,
+  },
+  {
+    ...DEFAULT_STEP,
+    id: 5,
     label: 'Отправка',
     backButtonText: 'Назад',
     nextButtonText: 'Отправить',

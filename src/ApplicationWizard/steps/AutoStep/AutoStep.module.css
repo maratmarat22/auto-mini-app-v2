@@ -6,10 +6,6 @@
   gap: 32px; /* Расстояние между хедером, списком и футером */
 }
 
-.mainIcon {
-  color: #fff;
-}
-
 /* Список кнопок */
 .buttonsList {
   display: flex;

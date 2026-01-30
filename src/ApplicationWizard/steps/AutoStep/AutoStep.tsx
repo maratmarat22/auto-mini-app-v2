@@ -96,34 +96,36 @@ export const AutoStep = () => {
   }
 
   return (
-    <div className={styles.menuContainer}>
-      <div className="stepHeader">
-        <div className="stepIcon">
-          <CarFront size={32} className={styles.mainIcon} />
+    <>
+      <div className="stepContainer">
+        <div className="stepHeader">
+          <div className="stepIcon">
+            <CarFront size={32} />
+          </div>
+          <Headline weight="1">Параметры авто</Headline>
+          <Subheadline className="stepDesc">
+            Уточните базовую информацию об автомобиле, чтобы мы подобрали лучшие
+            варианты.
+          </Subheadline>
         </div>
-        <Headline weight="1">Параметры авто</Headline>
-        <Subheadline className="stepDesc">
-          Уточните базовую информацию об автомобиле, чтобы мы подобрали лучшие
-          варианты.
-        </Subheadline>
-      </div>
 
-      <div className={styles.buttonsList}>
-        {SUBSTEP_CONFIG.map((config) => {
-          if (config.showIf && !config.showIf(wizardData)) return null;
+        <div className={styles.buttonsList}>
+          {SUBSTEP_CONFIG.map((config) => {
+            if (config.showIf && !config.showIf(wizardData)) return null;
 
-          return (
-            <SubstepButton
-              key={config.field}
-              value={wizardData[config.field]}
-              onClick={() => {
-                setCurrentSubstep(config.field);
-                setOnSubstep(true);
-              }}
-              text={config.getLabel(wizardData)}
-            />
-          );
-        })}
+            return (
+              <SubstepButton
+                key={config.field}
+                value={wizardData[config.field]}
+                onClick={() => {
+                  setCurrentSubstep(config.field);
+                  setOnSubstep(true);
+                }}
+                text={config.getLabel(wizardData)}
+              />
+            );
+          })}
+        </div>
       </div>
 
       <div
@@ -141,6 +143,6 @@ export const AutoStep = () => {
           </Caption>
         </div>
       </div>
-    </div>
+    </>
   );
 };

@@ -1,6 +1,12 @@
 import styles from './ApplicationWizard.module.css';
 import { Footer, Header } from './components';
-import { AutoStep, BudgetStep, HeroStep, SubmitStep } from './steps';
+import {
+  AutoStep,
+  BudgetStep,
+  CommentStep,
+  HeroStep,
+  SubmitStep,
+} from './steps';
 import { useWizardStore } from './store/useWizardStore';
 
 export const ApplicationWizard = ({ isMobile }: { isMobile: boolean }) => {
@@ -18,8 +24,9 @@ export const ApplicationWizard = ({ isMobile }: { isMobile: boolean }) => {
       <main>
         {step === 1 && <HeroStep />}
         {step === 2 && <AutoStep />}
-        {step === 3 && <BudgetStep />}
-        {step === 4 && <SubmitStep />}
+        {step === 3 && <CommentStep />}
+        {step === 4 && <BudgetStep />}
+        {step === 5 && <SubmitStep />}
       </main>
       <div className={styles.footerContainer}>
         <Footer />

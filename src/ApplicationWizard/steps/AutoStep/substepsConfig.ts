@@ -36,6 +36,16 @@ export const SUBSTEP_CONFIG = [
         : 'Выберите конфигурацию',
     showIf: (data: WizardData) => !!data.generation,
   },
+  // {
+  //   field: 'modification' as const,
+  //   header: 'Выберите модификацию',
+  //   placeholder: 'Например, ...',
+  //   getLabel: (data: WizardData) =>
+  //     data.modification
+  //       ? `Модификация: ${data.modification.name}`
+  //       : 'Выберите модификацию',
+  //   showIf: (data: WizardData) => !!data.configuration,
+  // },
   {
     field: 'bodyType' as const,
     header: 'Выберите тип кузова',

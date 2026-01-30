@@ -22,9 +22,10 @@ main {
   flex: 1;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
+
   padding: 20px 20px 102px 20px;
 
+  overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -36,6 +37,9 @@ main {
   height: 82px;
   z-index: 10;
   background-color: var(--tgui--tertiary_bg_color);
+
+  display: flex;
+  justify-content: center;
 
   padding-bottom: env(safe-area-inset-bottom);
   box-sizing: content-box;

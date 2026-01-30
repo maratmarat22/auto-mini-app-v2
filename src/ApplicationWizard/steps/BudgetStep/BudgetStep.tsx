@@ -36,10 +36,10 @@ export const BudgetStep = () => {
   };
 
   return (
-    <div className={styles.container}>
+    <div className="stepContainer">
       <div className="stepHeader">
         <div className="stepIcon">
-          <Wallet size={32} className={styles.mainIcon} />
+          <Wallet size={32} />
         </div>
         <Headline weight="1">Планируемый бюджет</Headline>
         <Subheadline className="stepDesc">
