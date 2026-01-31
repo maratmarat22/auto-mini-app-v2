@@ -22,8 +22,8 @@ export const useWizardStore = create<WizardStore>((set, get) => ({
   setStep: (step) => set({ step }),
 
   handleNextStep: async () => {
-    const state = get();
-    if (state.step === STEPS_CONFIG.length - 1) {
+    const currentStep = get().step;
+    if (currentStep === STEPS_CONFIG.length - 1) {
       try {
         set({ submitPending: true });
         await autoApi.postApplication();
@@ -34,6 +34,8 @@ export const useWizardStore = create<WizardStore>((set, get) => ({
       } finally {
         set({ submitPending: false });
       }
+    } else if (currentStep === STEPS_CONFIG.length) {
+      console.log('exit');
     }
     set((state) => ({
       onSubstep: false,
@@ -41,7 +43,13 @@ export const useWizardStore = create<WizardStore>((set, get) => ({
     }));
   },
 
-  handlePrevStep: () =>
+  handlePrevStep: () => {
+    const state = get();
+    if (state.step === STEPS_CONFIG.length && state.submitSuccessful) {
+      state.reset();
+      state.setStep(2);
+      return;
+    }
     set((state) => {
       if (state.onSubstep) {
         return { onSubstep: false };
@@ -49,7 +57,8 @@ export const useWizardStore = create<WizardStore>((set, get) => ({
       return {
         step: Math.max(state.step - 1, 1),
       };
-    }),
+    });
+  },
 
   updateData: (newData) =>
     set((state) => ({ data: { ...state.data, ...newData } })),

@@ -45,4 +45,5 @@ export interface WizardStore {
   handlePrevStep: () => void;
   updateData: (data: Partial<WizardData>) => void;
   setOnSubstep: (onSubstep: boolean) => void;
+  reset: () => void;
 }

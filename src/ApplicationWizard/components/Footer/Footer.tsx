@@ -11,18 +11,24 @@ export const Footer = () => {
     handleNextStep,
     handlePrevStep,
     onSubstep,
+    submitSuccessful,
   } = useWizardStore();
   const currentStepConfig = STEPS_CONFIG[currentStep - 1];
+  const isLastStep = currentStep === STEPS_CONFIG.length;
 
   return (
     <footer>
-      {(currentStepConfig.backButtonText || onSubstep) && (
+      {(currentStepConfig.backButtonText || onSubstep || isLastStep) && (
         <Button
           onClick={handlePrevStep}
           mode="gray"
           className={styles.backButton}
         >
-          {currentStepConfig.backButtonText ?? 'Back'}
+          {isLastStep
+            ? submitSuccessful
+              ? 'Отправить ещё'
+              : 'Попробовать ещё раз'
+            : (currentStepConfig.backButtonText ?? 'Back')}
         </Button>
       )}
       {!onSubstep && (
