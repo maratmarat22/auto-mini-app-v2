@@ -29,13 +29,6 @@
   gap: 8px;
 }
 
-.input {
-  background-color: var(--tgui--secondary_bg_color) !important;
-  border: 1px solid var(--tgui--separator_color);
-  border-radius: 16px;
-  transition: border-color 0.2s ease;
-}
-
 .rubleIcon {
   color: var(--tgui--button_color);
   margin-right: 8px;

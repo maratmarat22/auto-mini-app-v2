@@ -1,10 +1,13 @@
 import { create } from 'zustand';
 
+import { autoApi } from '../api/autoApi';
 import { STEPS_CONFIG } from '../steps/stepsConfig';
 
 import type { WizardStore } from '@/ApplicationWizard/types/wizard';
 
-export const useWizardStore = create<WizardStore>((set) => ({
+export const useWizardStore = create<WizardStore>((set, get) => ({
+  submitPending: false,
+  submitSuccessful: false,
   step: 1,
   onSubstep: false,
   data: {
@@ -18,13 +21,27 @@ export const useWizardStore = create<WizardStore>((set) => ({
 
   setStep: (step) => set({ step }),
 
-  nextStep: () =>
+  handleNextStep: async () => {
+    const state = get();
+    if (state.step === STEPS_CONFIG.length - 1) {
+      try {
+        set({ submitPending: true });
+        await autoApi.postApplication();
+        set({ submitSuccessful: true });
+      } catch (error) {
+        set({ submitSuccessful: false });
+        console.error(error);
+      } finally {
+        set({ submitPending: false });
+      }
+    }
     set((state) => ({
       onSubstep: false,
       step: Math.min(state.step + 1, STEPS_CONFIG.length),
-    })),
+    }));
+  },
 
-  prevStep: () =>
+  handlePrevStep: () =>
     set((state) => {
       if (state.onSubstep) {
         return { onSubstep: false };
@@ -41,6 +58,8 @@ export const useWizardStore = create<WizardStore>((set) => ({
 
   reset: () =>
     set({
+      submitPending: false,
+      submitSuccessful: false,
       step: 1,
       onSubstep: false,
       data: {

@@ -1,15 +1,10 @@
-import {
-  Headline,
-  Subheadline,
-  Input,
-  Button,
-  Text,
-} from '@telegram-apps/telegram-ui';
+import { Input, Button, Text } from '@telegram-apps/telegram-ui';
 import { RussianRuble, Wallet } from 'lucide-react';
 
 import { useWizardStore } from '@/ApplicationWizard/store/useWizardStore';
 
 import styles from './BudgetStep.module.css';
+import { StepHeader } from '../components/StepHeader';
 
 const budgetFormatter = new Intl.NumberFormat('ru-RU', {
   style: 'decimal',
@@ -23,7 +18,7 @@ const BUDGET_PRESETS = [
   { label: '5 млн ₽', value: 5000000 },
 ];
 
-export const BudgetStep = () => {
+export const BudgetStep = ({ isMobile }: { isMobile: boolean }) => {
   const budget = useWizardStore((state) => state.data.budget);
   const updateData = useWizardStore((state) => state.updateData);
 
@@ -37,16 +32,10 @@ export const BudgetStep = () => {
 
   return (
     <div className="stepContainer">
-      <div className="stepHeader">
-        <div className="stepIcon">
-          <Wallet size={32} />
-        </div>
-        <Headline weight="1">Планируемый бюджет</Headline>
-        <Subheadline className="stepDesc">
-          Укажите ваш бюджет. <br />
-          <b>Расчет ведется строго в рублях (₽).</b>
-        </Subheadline>
-      </div>
+      <StepHeader icon={Wallet} headline="Планируемый бюджет">
+        Укажите ваш бюджет. <br />
+        <b>Расчет ведется строго в рублях (₽).</b>
+      </StepHeader>
 
       <div className={styles.inputWrapper}>
         <Input
@@ -56,7 +45,7 @@ export const BudgetStep = () => {
           placeholder="Например, 1 500 000"
           value={displayValue}
           onChange={handleChange}
-          className={styles.input}
+          className={isMobile ? 'inputMobile' : 'input'}
           after={<RussianRuble size={20} className={styles.rubleIcon} />}
         />
       </div>

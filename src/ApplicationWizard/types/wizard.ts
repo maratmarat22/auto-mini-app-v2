@@ -34,13 +34,15 @@ export interface WizardData {
 }
 
 export interface WizardStore {
+  submitPending: boolean;
+  submitSuccessful: boolean;
   step: number;
   onSubstep: boolean;
   data: WizardData;
 
   setStep: (step: number) => void;
-  nextStep: () => void;
-  prevStep: () => void;
+  handleNextStep: () => void;
+  handlePrevStep: () => void;
   updateData: (data: Partial<WizardData>) => void;
   setOnSubstep: (onSubstep: boolean) => void;
 }

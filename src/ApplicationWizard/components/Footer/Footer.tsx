@@ -8,28 +8,25 @@ import styles from './Footer.module.css';
 export const Footer = () => {
   const {
     step: currentStep,
-    nextStep,
-    prevStep,
-    data,
+    handleNextStep,
+    handlePrevStep,
     onSubstep,
   } = useWizardStore();
   const currentStepConfig = STEPS_CONFIG[currentStep - 1];
-  const isDataValid = currentStepConfig.isValid(data);
-  const canGoNext = isDataValid && !onSubstep;
 
   return (
     <footer>
-      {(currentStep !== 1 || onSubstep) && (
-        <Button onClick={prevStep} mode="gray" className={styles.backButton}>
+      {(currentStepConfig.backButtonText || onSubstep) && (
+        <Button
+          onClick={handlePrevStep}
+          mode="gray"
+          className={styles.backButton}
+        >
           {currentStepConfig.backButtonText ?? 'Back'}
         </Button>
       )}
       {!onSubstep && (
-        <Button
-          disabled={!canGoNext}
-          onClick={nextStep}
-          className={styles.nextButton}
-        >
+        <Button onClick={handleNextStep} className={styles.nextButton}>
           {currentStepConfig.nextButtonText ?? 'Next'}
         </Button>
       )}

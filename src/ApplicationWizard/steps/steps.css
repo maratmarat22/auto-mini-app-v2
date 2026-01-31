@@ -35,3 +35,14 @@
   line-height: 1.4;
   max-width: 280px;
 }
+
+.inputMobile {
+  background-color: var(--tgui--secondary_bg_color) !important;
+  border: 1px solid var(--tgui--separator_color);
+  border-radius: 16px;
+  transition: border-color 0.2s ease;
+}
+
+.textareaMobile {
+  background-color: var(--tgui--secondary_bg_color) !important;
+}

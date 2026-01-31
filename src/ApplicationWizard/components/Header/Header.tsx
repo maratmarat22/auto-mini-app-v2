@@ -19,7 +19,7 @@ export const Header = ({ isMobile }: { isMobile: boolean }) => {
           ШАГ {currentStep} ИЗ {totalSteps}
         </Caption>
         <Headline weight="1">
-          {STEPS_CONFIG.find((step) => step.id === currentStep)?.label}
+          {STEPS_CONFIG.find((step) => step.stepNumber === currentStep)?.header}
         </Headline>
       </div>
 

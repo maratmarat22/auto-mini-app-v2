@@ -1,7 +1,7 @@
 import { Headline, Subheadline, Textarea } from '@telegram-apps/telegram-ui';
 import { MessageSquareMore } from 'lucide-react';
 
-export const CommentStep = () => {
+export const CommentStep = ({ isMobile }: { isMobile: boolean }) => {
   return (
     <div className="stepContainer">
       <div className="stepHeader">
@@ -14,7 +14,12 @@ export const CommentStep = () => {
         </Subheadline>
       </div>
 
-      <Textarea header="Комментарий" placeholder="Введите текст..." rows={4} />
+      <Textarea
+        header="Комментарий"
+        placeholder="Введите текст..."
+        rows={4}
+        className={isMobile ? 'textareaMobile' : ''}
+      />
     </div>
   );
 };

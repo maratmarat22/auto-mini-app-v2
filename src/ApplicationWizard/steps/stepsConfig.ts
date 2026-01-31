@@ -1,51 +1,50 @@
-import type { WizardData } from '../types/wizard';
-
 interface StepData {
-  id: number;
-  label: string;
+  stepNumber: number;
+  header: string;
   backButtonText: string | null;
   nextButtonText: string;
-  isValid: (data: WizardData) => boolean;
 }
 
 const DEFAULT_STEP: Required<
-  Pick<StepData, 'backButtonText' | 'nextButtonText' | 'isValid'>
+  Pick<StepData, 'backButtonText' | 'nextButtonText'>
 > = {
   backButtonText: 'Назад',
   nextButtonText: 'Далее',
-  isValid: (_: WizardData) => true,
 };
 
 export const STEPS_CONFIG: StepData[] = [
   {
     ...DEFAULT_STEP,
-    id: 1,
-    label: 'Старт',
+    stepNumber: 1,
+    header: 'Старт',
     backButtonText: null,
     nextButtonText: 'Создать заявку',
   },
   {
     ...DEFAULT_STEP,
-    id: 2,
-    label: 'Авто',
-    isValid: (data: WizardData) => !!data.brand,
+    stepNumber: 2,
+    header: 'Авто',
   },
   {
     ...DEFAULT_STEP,
-    id: 3,
-    label: 'Комментарий',
+    stepNumber: 3,
+    header: 'Комментарий',
   },
   {
     ...DEFAULT_STEP,
-    id: 4,
-    label: 'Бюджет',
-    isValid: (data: WizardData) => data.budget > 0,
+    stepNumber: 4,
+    header: 'Бюджет',
   },
   {
     ...DEFAULT_STEP,
-    id: 5,
-    label: 'Отправка',
-    backButtonText: 'Назад',
+    stepNumber: 5,
+    header: 'Отправка',
     nextButtonText: 'Отправить',
+  },
+  {
+    ...DEFAULT_STEP,
+    stepNumber: 6,
+    header: 'Результат',
+    nextButtonText: 'Выйти',
   },
 ];

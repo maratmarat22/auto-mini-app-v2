@@ -44,4 +44,5 @@ export const autoApi = {
       })
       .then((res) => res.data),
   getBodyTypes: () => api.get<BodyType[]>('body-types').then((res) => res.data),
+  postApplication: () => api.post('applications'),
 };

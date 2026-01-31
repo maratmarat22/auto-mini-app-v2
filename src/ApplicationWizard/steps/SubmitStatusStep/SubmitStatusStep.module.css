@@ -1,0 +1,7 @@
+.success {
+  background-color: var(--tgui--green);
+}
+
+.fail {
+  background-color: var(--tgui--destructive_text_color);
+}
