@@ -1,9 +1,5 @@
-import {
-  Caption,
-  Text,
-  Headline,
-  Subheadline,
-} from '@telegram-apps/telegram-ui';
+/* eslint-disable no-fallthrough */
+import { Caption, Text, Headline, Subheadline } from '@telegram-apps/telegram-ui';
 import { Info, CarFront } from 'lucide-react';
 import { useState } from 'react';
 
@@ -17,20 +13,26 @@ import { SUBSTEP_CONFIG } from './substepsConfig';
 
 import '../steps.css';
 
-import type { AutoField, AutoSubstep } from './types/types';
+import type { AutoProp as AutoProp, AutoSubstep } from './types/prop&substep';
+import type { AutoEntity } from '@/ApplicationWizard/types/wizard';
 
 export const AutoStep = () => {
-  const {
-    data: wizardData,
-    updateData,
-    onSubstep,
-    setOnSubstep,
-  } = useWizardStore();
+  const { application, updateData, onSubstep, setOnSubstep } = useWizardStore();
   const [currentSubstep, setCurrentSubstep] = useState<AutoSubstep>(null);
-
-  const isStepValid = !!(wizardData.brand || wizardData.bodyType);
+  const isStepValid = application.auto.bodyType || application.auto.brand;
 
   const autoQueries = useAutoQueries(currentSubstep);
+  const getSubstepData = (substep: AutoSubstep) => {
+    if (!substep) return { list: [], isLoading: false };
+
+    const listKey = `${substep}s` as keyof typeof autoQueries;
+    const isLoadingKey = `${substep}sAreLoading` as keyof typeof autoQueries;
+
+    return {
+      list: (autoQueries[listKey] as AutoEntity[]) || [],
+      isLoading: !!autoQueries[isLoadingKey],
+    };
+  };
   const autoQueriesMap = {
     brand: {
       list: autoQueries.brands,
@@ -52,30 +54,41 @@ export const AutoStep = () => {
       list: autoQueries.bodyTypes,
       isLoading: autoQueries.bodyTypesAreLoading,
     },
+    engineType: {
+      list: autoQueries.engineTypes,
+      isLoading: autoQueries.engineTypesAreLoading,
+    },
+    gearType: {
+      list: autoQueries.gearTypes,
+      isLoading: autoQueries.gearTypesAreLoading,
+    },
+    transmission: {
+      list: autoQueries.transmissions,
+      isLoading: autoQueries.transmissionsAreLoading,
+    },
   };
 
-  const handleSelect = (
-    field: AutoField,
-    item: { id: string; name: string } | null,
-  ) => {
-    const isChanged = wizardData[field]?.id !== item?.id;
+  const handleSelect = (prop: AutoProp, value: AutoEntity | null) => {
+    if (application.auto[prop]?.id !== value?.id) {
+      const currentAuto = application.auto;
+      const newAutoData = { ...currentAuto, [prop]: value };
 
-    const updates: Record<AutoField, () => void> = {
-      brand: () =>
-        isChanged && updateData({ brand: item, model: null, generation: null }),
-      model: () => isChanged && updateData({ model: item, generation: null }),
-      generation: () => isChanged && updateData({ generation: item }),
-      configuration: () => isChanged && updateData({ configuration: item }),
-      bodyType: () =>
-        updateData({
-          bodyType: item,
-          brand: null,
-          model: null,
-          generation: null,
-        }),
-    };
-
-    updates[field]?.();
+      switch (prop) {
+        case 'bodyType':
+          newAutoData.brand = null;
+        case 'brand':
+          newAutoData.model = null;
+        case 'model':
+          newAutoData.generation = null;
+        case 'generation':
+          newAutoData.configuration = null;
+        case 'configuration':
+          newAutoData.modification = null;
+          break;
+      }
+      updateData({ auto: newAutoData });
+    }
+    setCurrentSubstep(null);
     setOnSubstep(false);
   };
 
@@ -104,33 +117,30 @@ export const AutoStep = () => {
           </div>
           <Headline weight="1">Параметры авто</Headline>
           <Subheadline className="stepDesc">
-            Уточните базовую информацию об автомобиле, чтобы мы подобрали лучшие
-            варианты.
+            Уточните базовую информацию об автомобиле, чтобы мы подобрали лучшие варианты.
           </Subheadline>
         </div>
 
         <div className={styles.buttonsList}>
           {SUBSTEP_CONFIG.map((config) => {
-            if (config.showIf && !config.showIf(wizardData)) return null;
+            if (config.showIf && !config.showIf(application)) return null;
 
             return (
               <SubstepButton
                 key={config.field}
-                value={wizardData[config.field]}
+                value={application[config.field]}
                 onClick={() => {
                   setCurrentSubstep(config.field);
                   setOnSubstep(true);
                 }}
-                text={config.getLabel(wizardData)}
+                text={config.getLabel(application)}
               />
             );
           })}
         </div>
       </div>
 
-      <div
-        className={`${styles.footerHint} ${isStepValid ? styles.hintValid : ''}`}
-      >
+      <div className={`${styles.footerHint} ${isStepValid ? styles.hintValid : ''}`}>
         <div className={styles.hintIconWrapper}>
           <Info size={18} />
         </div>

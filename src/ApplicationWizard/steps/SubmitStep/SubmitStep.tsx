@@ -6,7 +6,7 @@ import { useWizardStore } from '@/ApplicationWizard/store/useWizardStore';
 import { StepHeader } from '../components/StepHeader';
 
 export const SubmitStep = () => {
-  const { data: wizardData } = useWizardStore();
+  const { application: wizardData } = useWizardStore();
 
   return (
     <div className="stepContainer">

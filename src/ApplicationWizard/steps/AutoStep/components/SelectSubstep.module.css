@@ -1,3 +1,26 @@
-.list {
-  border: 2px solid var(--tgui--divider);
+.container {
+  min-height: 100vh;
+}
+
+.iconHint {
+  color: var(--tgui--hint_color);
+}
+
+.clickableIcon {
+  color: var(--tgui--hint_color);
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.clickableIcon:active {
+  opacity: 0.5;
+}
+
+.iconDestructive {
+  color: var(--tgui--destructive_text_color);
+}
+
+.textDestructive {
+  color: var(--tgui--destructive_text_color);
+  font-weight: 500;
 }

@@ -1,48 +1,53 @@
 import { api } from '@/api/instance';
 
-import {
-  type Generation,
-  type Brand,
-  type Model,
-  type BodyType,
-  type Configuration,
-} from '../types/wizard';
+import { type AutoData, type AutoEntity } from '../types/wizard';
+
+const formatAutoDataIntoParams = (auto: AutoData) => {
+  console.log('SSSSSSSSSSSSSSSSSSSSSSSS' + auto.bodyType);
+  return Object.entries(auto).reduce(
+    (acc, [key, value]) => {
+      // Если это объект с id (наш NamedEntity), берем id
+      if (value && typeof value === 'object' && 'id' in value) {
+        acc[`${key}Id`] = value.id;
+      }
+      // Если это просто строка или число, берем как есть
+      else if (value !== null) {
+        acc[key] = value;
+      }
+      return acc;
+    },
+    {} as Record<string, any>,
+  );
+};
 
 export const autoApi = {
-  getBrands: ({ bodyTypeId }: { bodyTypeId?: string }) =>
+  getBrands: (auto: AutoData) =>
     api
-      .get<Brand[]>('brands', { params: { bodyTypeId: bodyTypeId } })
+      .get<AutoEntity[]>('brands', { params: formatAutoDataIntoParams(auto) })
       .then((res) => res.data),
-  getModels: ({
-    brandId,
-    bodyTypeId,
-  }: {
-    brandId: string;
-    bodyTypeId?: string;
-  }) =>
+
+  getModels: (params: Partial<AutoData>) =>
+    api.get<AutoEntity[]>('models', { params }).then((res) => res.data),
+
+  getGenerations: (params: Partial<AutoData>) =>
+    api.get<AutoEntity[]>('generations', { params }).then((res) => res.data),
+
+  getConfigurations: (params: Partial<AutoData>) =>
+    api.get<AutoEntity[]>('configurations', { params }).then((res) => res.data),
+
+  getBodyTypes: (auto: AutoData) =>
     api
-      .get<Model[]>('models', {
-        params: { brandId: brandId, bodyTypeId: bodyTypeId },
-      })
+      .get<AutoEntity[]>('body-types', { params: formatAutoDataIntoParams(auto) })
       .then((res) => res.data),
-  getGenerations: ({
-    modelId,
-    bodyTypeId,
-  }: {
-    modelId: string;
-    bodyTypeId?: string;
-  }) =>
-    api
-      .get<
-        Generation[]
-      >('generations', { params: { modelId: modelId, bodyTypeId: bodyTypeId } })
-      .then((res) => res.data),
-  getConfigurations: ({ generationId }: { generationId: string }) =>
-    api
-      .get<Configuration[]>('configurations', {
-        params: { generationId: generationId },
-      })
-      .then((res) => res.data),
-  getBodyTypes: () => api.get<BodyType[]>('body-types').then((res) => res.data),
+
+  getEngineTypes: (params: Partial<AutoData>) =>
+    api.get<AutoEntity[]>('engine-types', { params }).then((res) => res.data),
+
+  getGearTypes: (params: Partial<AutoData>) =>
+    api.get<AutoEntity[]>('gear-types', { params }).then((res) => res.data),
+
+  getTransmissions: (params: Partial<AutoData>) =>
+    api.get<AutoEntity[]>('transmissions', { params }).then((res) => res.data),
+
   postApplication: () => api.post('applications'),
 };

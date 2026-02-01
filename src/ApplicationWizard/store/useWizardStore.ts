@@ -10,13 +10,21 @@ export const useWizardStore = create<WizardStore>((set, get) => ({
   submitSuccessful: false,
   step: 1,
   onSubstep: false,
-  data: {
+  application: {
     budget: 0,
-    brand: null,
-    model: null,
-    generation: null,
-    configuration: null,
-    bodyType: null,
+    comment: null,
+    auto: {
+      bodyType: null,
+      engineType: null,
+      gearType: null,
+      transmission: null,
+
+      brand: null,
+      model: null,
+      generation: null,
+      configuration: null,
+      modification: null,
+    },
   },
 
   setStep: (step) => set({ step }),
@@ -61,7 +69,7 @@ export const useWizardStore = create<WizardStore>((set, get) => ({
   },
 
   updateData: (newData) =>
-    set((state) => ({ data: { ...state.data, ...newData } })),
+    set((state) => ({ application: { ...state.application, ...newData } })),
 
   setOnSubstep: (onSubstep: boolean) => set({ onSubstep: onSubstep }),
 
@@ -71,13 +79,21 @@ export const useWizardStore = create<WizardStore>((set, get) => ({
       submitSuccessful: false,
       step: 1,
       onSubstep: false,
-      data: {
+      application: {
         budget: 0,
-        brand: null,
-        model: null,
-        generation: null,
-        configuration: null,
-        bodyType: null,
+        comment: null,
+        auto: {
+          bodyType: null,
+          engineType: null,
+          gearType: null,
+          transmission: null,
+
+          brand: null,
+          model: null,
+          generation: null,
+          configuration: null,
+          modification: null,
+        },
       },
     }),
 }));

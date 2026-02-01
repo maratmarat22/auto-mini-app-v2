@@ -1,36 +1,25 @@
-export type Brand = {
+export interface AutoEntity {
   id: string;
   name: string;
-};
+}
 
-export type Model = {
-  id: string;
-  name: string;
-};
+export interface AutoData {
+  bodyType: AutoEntity | null;
+  engineType: AutoEntity | null;
+  gearType: AutoEntity | null;
+  transmission: AutoEntity | null;
 
-export type Generation = {
-  id: string;
-  name: string;
-};
+  brand: AutoEntity | null;
+  model: AutoEntity | null;
+  generation: AutoEntity | null;
+  configuration: AutoEntity | null;
+  modification: AutoEntity | null;
+}
 
-export type Configuration = {
-  id: string;
-  name: string;
-};
-
-export type BodyType = {
-  id: string;
-  name: string;
-};
-
-export interface WizardData {
-  brand: Brand | null;
-  model: Model | null;
-  generation: Generation | null;
-  configuration: Configuration | null;
-
-  bodyType: BodyType | null;
+export interface ApplicationData {
   budget: number;
+  comment: string | null;
+  auto: AutoData;
 }
 
 export interface WizardStore {
@@ -38,12 +27,12 @@ export interface WizardStore {
   submitSuccessful: boolean;
   step: number;
   onSubstep: boolean;
-  data: WizardData;
+  application: ApplicationData;
 
   setStep: (step: number) => void;
   handleNextStep: () => void;
   handlePrevStep: () => void;
-  updateData: (data: Partial<WizardData>) => void;
+  updateData: (data: Partial<ApplicationData>) => void;
   setOnSubstep: (onSubstep: boolean) => void;
   reset: () => void;
 }

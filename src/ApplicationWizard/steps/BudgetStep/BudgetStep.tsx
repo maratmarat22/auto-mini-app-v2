@@ -19,7 +19,7 @@ const BUDGET_PRESETS = [
 ];
 
 export const BudgetStep = ({ isMobile }: { isMobile: boolean }) => {
-  const budget = useWizardStore((state) => state.data.budget);
+  const budget = useWizardStore((state) => state.application.budget);
   const updateData = useWizardStore((state) => state.updateData);
 
   const displayValue = budget ? budgetFormatter.format(budget) : '';
