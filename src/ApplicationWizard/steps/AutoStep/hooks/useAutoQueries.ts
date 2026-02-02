@@ -1,62 +1,70 @@
 import { useQuery } from '@tanstack/react-query';
-import { useEffect } from 'react';
 
 import { autoApi } from '@/ApplicationWizard/api/autoApi';
 import { useWizardStore } from '@/ApplicationWizard/store/useWizardStore';
 
-import type { AutoSubstep } from '../types/prop&substep';
-
-export const useAutoQueries = (_currentSubstep: AutoSubstep) => {
-  const { application: wizardData, updateData } = useWizardStore();
+export const useAutoQueries = () => {
+  const { application } = useWizardStore();
 
   const { data: brands, isLoading: brandsAreLoading } = useQuery({
     queryKey: [
       'brands',
-      wizardData.auto.bodyType,
-      wizardData.auto.engineType,
-      wizardData.auto.gearType,
-      wizardData.auto.transmission,
+      application.auto.bodyType?.id,
+      application.auto.engineType?.id,
+      application.auto.gearType?.id,
+      application.auto.transmission?.id,
     ],
     queryFn: () => {
-      return autoApi.getBrands(wizardData.auto);
+      return autoApi.getBrands({ bodyTypeId: application.auto.bodyType?.id });
     },
   });
 
   const { data: models, isLoading: modelsAreLoading } = useQuery({
-    queryKey: ['models', wizardData.brand?.id, wizardData.bodyType?.id],
+    queryKey: ['models', application.auto.brand?.id],
     queryFn: () =>
       autoApi.getModels({
-        brandId: wizardData.brand!.id,
-        bodyTypeId: wizardData.bodyType?.id,
+        brandId: application.auto.brand!.id,
       }),
-    enabled: !!wizardData.brand,
+    enabled: !!application.auto.brand,
   });
 
   const { data: generations, isLoading: generationsAreLoading } = useQuery({
-    queryKey: ['generations', wizardData.model?.id, wizardData.bodyType?.id],
+    queryKey: ['generations', application.auto.model?.id],
     queryFn: () =>
       autoApi.getGenerations({
-        modelId: wizardData.model!.id,
-        bodyTypeId: wizardData.bodyType?.id,
+        modelId: application.auto.model!.id,
       }),
-    enabled: !!wizardData.model,
+    enabled: !!application.auto.model,
   });
 
-  const { data: configurations, isLoading: configurationsAreLoading } = useQuery({
-    queryKey: ['configurations', wizardData.generation?.id],
-    queryFn: () => autoApi.getConfigurations({ generationId: wizardData.generation!.id }),
-    enabled: !!wizardData.generation,
+  const { data: configurations, isLoading: configurationsAreLoading } =
+    useQuery({
+      queryKey: ['configurations', application.auto.generation?.id],
+      queryFn: () =>
+        autoApi.getConfigurations({
+          generationId: application.auto.generation!.id,
+        }),
+      enabled: !!application.auto.generation,
+    });
+
+  const { data: modifications, isLoading: modificationsAreLoading } = useQuery({
+    queryKey: ['modifications', application.auto.configuration?.id],
+    queryFn: () =>
+      autoApi.getModifications({
+        configurationId: application.auto.configuration!.id,
+      }),
+    enabled: !!application.auto.configuration,
   });
 
   const { data: bodyTypes, isLoading: bodyTypesAreLoading } = useQuery({
     queryKey: [
       'body-types',
-      wizardData.auto.brand,
-      wizardData.auto.model,
-      wizardData.auto.configuration,
-      wizardData.auto.modification,
+      application.auto.brand,
+      application.auto.model,
+      application.auto.configuration,
+      application.auto.modification,
     ],
-    queryFn: () => autoApi.getBodyTypes(wizardData.auto),
+    queryFn: autoApi.getBodyTypes,
   });
 
   const { data: engineTypes, isLoading: engineTypesAreLoading } = useQuery({
@@ -74,24 +82,6 @@ export const useAutoQueries = (_currentSubstep: AutoSubstep) => {
     queryFn: autoApi.getTransmissions,
   });
 
-  useEffect(() => {
-    if (models?.length === 1 && !modelsAreLoading) {
-      updateData({ model: models[0], generation: null });
-    }
-  }, [models, modelsAreLoading, updateData]);
-
-  useEffect(() => {
-    if (generations?.length === 1 && !generationsAreLoading) {
-      updateData({ generation: generations[0] });
-    }
-  }, [generations, generationsAreLoading, updateData]);
-
-  useEffect(() => {
-    if (configurations?.length === 1 && !configurationsAreLoading) {
-      updateData({ configuration: configurations[0] });
-    }
-  }, [configurations, configurationsAreLoading, updateData]);
-
   return {
     brands,
     brandsAreLoading,
@@ -101,6 +91,9 @@ export const useAutoQueries = (_currentSubstep: AutoSubstep) => {
     generationsAreLoading,
     configurations,
     configurationsAreLoading,
+    modifications,
+    modificationsAreLoading,
+
     bodyTypes,
     bodyTypesAreLoading,
     engineTypes,

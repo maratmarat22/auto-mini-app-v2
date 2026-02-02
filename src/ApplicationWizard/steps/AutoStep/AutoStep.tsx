@@ -1,5 +1,10 @@
 /* eslint-disable no-fallthrough */
-import { Caption, Text, Headline, Subheadline } from '@telegram-apps/telegram-ui';
+import {
+  Caption,
+  Text,
+  Headline,
+  Subheadline,
+} from '@telegram-apps/telegram-ui';
 import { Info, CarFront } from 'lucide-react';
 import { useState } from 'react';
 
@@ -21,18 +26,8 @@ export const AutoStep = () => {
   const [currentSubstep, setCurrentSubstep] = useState<AutoSubstep>(null);
   const isStepValid = application.auto.bodyType || application.auto.brand;
 
-  const autoQueries = useAutoQueries(currentSubstep);
-  const getSubstepData = (substep: AutoSubstep) => {
-    if (!substep) return { list: [], isLoading: false };
+  const autoQueries = useAutoQueries();
 
-    const listKey = `${substep}s` as keyof typeof autoQueries;
-    const isLoadingKey = `${substep}sAreLoading` as keyof typeof autoQueries;
-
-    return {
-      list: (autoQueries[listKey] as AutoEntity[]) || [],
-      isLoading: !!autoQueries[isLoadingKey],
-    };
-  };
   const autoQueriesMap = {
     brand: {
       list: autoQueries.brands,
@@ -49,6 +44,10 @@ export const AutoStep = () => {
     configuration: {
       list: autoQueries.configurations,
       isLoading: autoQueries.configurationsAreLoading,
+    },
+    modification: {
+      list: autoQueries.modifications,
+      isLoading: autoQueries.modificationsAreLoading,
     },
     bodyType: {
       list: autoQueries.bodyTypes,
@@ -93,8 +92,11 @@ export const AutoStep = () => {
   };
 
   if (onSubstep && currentSubstep) {
-    const config = SUBSTEP_CONFIG.find((s) => s.field === currentSubstep);
-    const { list, isLoading } = autoQueriesMap[currentSubstep];
+    const config = SUBSTEP_CONFIG.find(
+      (s) => s.propToChange === currentSubstep,
+    );
+    if (!config) return null;
+    const { list, isLoading } = autoQueriesMap[config.propToChange];
 
     return (
       <SelectSubstep
@@ -102,8 +104,8 @@ export const AutoStep = () => {
         isLoading={isLoading}
         onSelect={handleSelect}
         targetField={currentSubstep}
-        header={config?.header || ''}
-        placeholder={config?.placeholder || ''}
+        header={config?.searchHeader || ''}
+        placeholder={config?.searchPlaceholder || ''}
       />
     );
   }
@@ -117,30 +119,34 @@ export const AutoStep = () => {
           </div>
           <Headline weight="1">Параметры авто</Headline>
           <Subheadline className="stepDesc">
-            Уточните базовую информацию об автомобиле, чтобы мы подобрали лучшие варианты.
+            Уточните базовую информацию об автомобиле, чтобы мы подобрали лучшие
+            варианты.
           </Subheadline>
         </div>
 
         <div className={styles.buttonsList}>
           {SUBSTEP_CONFIG.map((config) => {
-            if (config.showIf && !config.showIf(application)) return null;
+            if (config.isShowable && !config.isShowable(application.auto))
+              return null;
 
             return (
               <SubstepButton
-                key={config.field}
-                value={application[config.field]}
+                key={config.propToChange}
+                value={application.auto[config.propToChange]}
                 onClick={() => {
-                  setCurrentSubstep(config.field);
+                  setCurrentSubstep(config.propToChange);
                   setOnSubstep(true);
                 }}
-                text={config.getLabel(application)}
+                text={config.getButtonLabel(application.auto)}
               />
             );
           })}
         </div>
       </div>
 
-      <div className={`${styles.footerHint} ${isStepValid ? styles.hintValid : ''}`}>
+      <div
+        className={`${styles.footerHint} ${isStepValid ? styles.hintValid : ''}`}
+      >
         <div className={styles.hintIconWrapper}>
           <Info size={18} />
         </div>

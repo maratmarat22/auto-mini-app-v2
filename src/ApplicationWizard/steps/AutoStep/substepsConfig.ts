@@ -1,5 +1,5 @@
 import type { AutoProp } from './types/prop&substep';
-import type { AutoData, AutoEntity } from '@/ApplicationWizard/types/wizard';
+import type { AutoData } from '@/ApplicationWizard/types/wizard';
 
 interface SubstepData {
   propToChange: AutoProp;
@@ -25,63 +25,88 @@ export const SUBSTEP_CONFIG: SubstepData[] = [
     propToChange: 'model',
     searchHeader: 'Выберите модель',
     searchPlaceholder: 'Например, X5',
+    listKey: 'models',
+    loadingKey: 'modelsAreLoading',
     getButtonLabel: (auto: AutoData) =>
       auto.model ? `Модель: ${auto.model.name}` : 'Выбрать модель',
     isShowable: (auto: AutoData) => !!auto.brand,
   },
   {
-    field: 'generation' as const,
-    header: 'Выберите поколение',
-    placeholder: 'Например, F15',
-    getLabel: (data: WizardData) =>
-      data.generation ? `Поколение: ${data.generation.name}` : 'Выбрать поколение',
-    showIf: (data: WizardData) => !!data.model,
+    propToChange: 'generation',
+    searchHeader: 'Выберите поколение',
+    searchPlaceholder: 'Например, X5',
+    listKey: 'generations',
+    loadingKey: 'generationsAreLoading',
+    getButtonLabel: (auto: AutoData) =>
+      auto.generation
+        ? `Поколение: ${auto.generation.name}`
+        : 'Выбрать поколение',
+    isShowable: (auto: AutoData) => !!auto.model,
   },
   {
-    field: 'configuration' as const,
-    header: 'Выберите конфигурацию',
-    placeholder: 'Например, кроссовер',
-    getLabel: (data: WizardData) =>
-      data.configuration ? `Конфигурация: ${data.configuration.name}` : 'Выбрать конфигурацию',
-    showIf: (data: WizardData) => !!data.generation,
-  },
-  // {
-  //   field: 'modification' as const,
-  //   header: 'Выберите модификацию',
-  //   placeholder: 'Например, ...',
-  //   getLabel: (data: WizardData) =>
-  //     data.modification
-  //       ? `Модификация: ${data.modification.name}`
-  //       : 'Выберите модификацию',
-  //   showIf: (data: WizardData) => !!data.configuration,
-  // },
-  {
-    field: 'bodyType' as const,
-    header: 'Выберите тип кузова',
-    placeholder: 'Например, кроссовер',
-    getLabel: (data: WizardData) =>
-      data.bodyType ? `Тип кузова: ${data.bodyType.name}` : 'Выбрать тип кузова',
-    showIf: (data: WizardData) => !data.generation,
+    propToChange: 'configuration',
+    searchHeader: 'Выберите конфигурацию',
+    searchPlaceholder: 'Например, кроссовер',
+    listKey: 'configurations',
+    loadingKey: 'configurationsAreLoading',
+    getButtonLabel: (auto: AutoData) =>
+      auto.configuration
+        ? `Конфигурация: ${auto.configuration.name}`
+        : 'Выбрать конфигурацию',
+    isShowable: (auto: AutoData) => !!auto.generation,
   },
   {
-    field: 'engineType' as const,
-    header: 'Выберите тип двигателя',
-    placeholder: 'Например, бензиновый',
-    getLabel: (data: WizardData) =>
-      data.engineType ? `Тип двигателя: ${data.engineType.name}` : 'Выбрать тип двигателя',
+    propToChange: 'modification',
+    searchHeader: 'Выберите модификацию',
+    searchPlaceholder: 'Например, ...',
+    listKey: 'modifications',
+    loadingKey: 'modificationsAreLoading',
+    getButtonLabel: (auto: AutoData) =>
+      auto.modification
+        ? `Модификация: ${auto.modification.name}`
+        : 'Выбрать модификацию',
+    isShowable: (auto: AutoData) => !!auto.configuration,
   },
   {
-    field: 'gearType' as const,
-    header: 'Выберите тип привода',
-    placeholder: 'Например, передний',
-    getLabel: (data: WizardData) =>
-      data.gearType ? `Тип привода: ${data.gearType.name}` : 'Выбрать тип привода',
+    propToChange: 'bodyType',
+    searchHeader: 'Выберите тип кузова',
+    searchPlaceholder: 'Например, кроссовер',
+    listKey: 'bodyTypes',
+    loadingKey: 'bodyTypesAreLoading',
+    getButtonLabel: (auto: AutoData) =>
+      auto.bodyType
+        ? `Тип кузова: ${auto.bodyType.name}`
+        : 'Выбрать тип кузова',
   },
   {
-    field: 'transmission' as const,
-    header: 'Выберите коробку',
-    placeholder: 'Например, робот',
-    getLabel: (data: WizardData) =>
-      data.transmission ? `Коробка: ${data.transmission.name}` : 'Выбрать коробку',
+    propToChange: 'engineType',
+    searchHeader: 'Выберите тип двигателя',
+    searchPlaceholder: 'Например, ГБО',
+    listKey: 'engineTypes',
+    loadingKey: 'engineTypesAreLoading',
+    getButtonLabel: (auto: AutoData) =>
+      auto.engineType
+        ? `Тип двигателя: ${auto.engineType.name}`
+        : 'Выбрать тип двигателя',
+  },
+  {
+    propToChange: 'gearType',
+    searchHeader: 'Выберите привод',
+    searchPlaceholder: 'Например, передний',
+    listKey: 'gearTypes',
+    loadingKey: 'gearTypesAreLoading',
+    getButtonLabel: (auto: AutoData) =>
+      auto.gearType ? `Привод: ${auto.gearType.name}` : 'Выбрать привод',
+  },
+  {
+    propToChange: 'transmission',
+    searchHeader: 'Выберите коробку',
+    searchPlaceholder: 'Например, робот',
+    listKey: 'transmissions',
+    loadingKey: 'transmissionsAreLoading',
+    getButtonLabel: (auto: AutoData) =>
+      auto.transmission
+        ? `Коробка: ${auto.transmission.name}`
+        : 'Выбрать коробку',
   },
 ];
