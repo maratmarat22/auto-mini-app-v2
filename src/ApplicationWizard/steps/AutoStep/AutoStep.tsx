@@ -4,6 +4,7 @@ import {
   Text,
   Headline,
   Subheadline,
+  Section,
 } from '@telegram-apps/telegram-ui';
 import { Info, CarFront } from 'lucide-react';
 import { useState } from 'react';
@@ -14,7 +15,7 @@ import styles from './AutoStep.module.css';
 import { SelectSubstep } from './components/SelectSubstep';
 import { SubstepButton } from './components/SubstepButton';
 import { useAutoQueries } from './hooks/useAutoQueries';
-import { SUBSTEP_CONFIG } from './substepsConfig';
+import { SUBSTEP_CONFIG as SUBSTEP_GROUPS_CONFIG } from './substepsConfig';
 
 import '../steps.css';
 
@@ -73,8 +74,6 @@ export const AutoStep = () => {
       const newAutoData = { ...currentAuto, [prop]: value };
 
       switch (prop) {
-        case 'bodyType':
-          newAutoData.brand = null;
         case 'brand':
           newAutoData.model = null;
         case 'model':
@@ -92,8 +91,8 @@ export const AutoStep = () => {
   };
 
   if (onSubstep && currentSubstep) {
-    const config = SUBSTEP_CONFIG.find(
-      (s) => s.propToChange === currentSubstep,
+    const config = SUBSTEP_GROUPS_CONFIG.flatMap((g) => g.configs).find(
+      (i) => i.propToChange === currentSubstep,
     );
     if (!config) return null;
     const { list, isLoading } = autoQueriesMap[config.propToChange];
@@ -124,21 +123,37 @@ export const AutoStep = () => {
           </Subheadline>
         </div>
 
-        <div className={styles.buttonsList}>
-          {SUBSTEP_CONFIG.map((config) => {
-            if (config.isShowable && !config.isShowable(application.auto))
+        <div className={styles.groupsContainer}>
+          {SUBSTEP_GROUPS_CONFIG.map((g) => {
+            const visibleItems = g.configs.filter(
+              (i) => !i.isVisible || i.isVisible(application.auto),
+            );
+
+            if (visibleItems.length === 0) {
               return null;
+            }
 
             return (
-              <SubstepButton
-                key={config.propToChange}
-                value={application.auto[config.propToChange]}
-                onClick={() => {
-                  setCurrentSubstep(config.propToChange);
-                  setOnSubstep(true);
-                }}
-                text={config.getButtonLabel(application.auto)}
-              />
+              <Section
+                key={g.id}
+                header={g.title.toUpperCase()}
+                // Оставляем className только если нужно убрать внешние маржины самого Section
+                className={styles.groupContainer}
+              >
+                <div className={styles.buttonsList}>
+                  {visibleItems.map((vi) => (
+                    <SubstepButton
+                      key={vi.propToChange}
+                      value={application.auto[vi.propToChange]}
+                      onClick={() => {
+                        setCurrentSubstep(vi.propToChange);
+                        setOnSubstep(true);
+                      }}
+                      text={vi.getButtonLabel(application.auto)}
+                    />
+                  ))}
+                </div>
+              </Section>
             );
           })}
         </div>

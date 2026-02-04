@@ -15,7 +15,7 @@
 .headerContainerMobile {
   background-color: var(--tgui--tertiary_bg_color);
   z-index: 10;
-  padding: 60px 20px 20px 20px;
+  padding: 70px 20px 20px 20px;
 }
 
 main {
