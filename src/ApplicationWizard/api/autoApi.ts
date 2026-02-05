@@ -52,11 +52,15 @@ export const autoApi = {
       .get<AutoEntity[]>('engine-types', { params: extractQueryParams(data) })
       .then((res) => res.data),
 
-  getGearTypes: () =>
-    api.get<AutoEntity[]>('gear-types').then((res) => res.data),
+  getGearTypes: (data: AutoData) =>
+    api
+      .get<AutoEntity[]>('gear-types', { params: extractQueryParams(data) })
+      .then((res) => res.data),
 
-  getTransmissions: () =>
-    api.get<AutoEntity[]>('transmissions').then((res) => res.data),
+  getTransmissions: (data: AutoData) =>
+    api
+      .get<AutoEntity[]>('transmissions', { params: extractQueryParams(data) })
+      .then((res) => res.data),
 
   postApplication: () => api.post('applications'),
 };

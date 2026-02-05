@@ -5,13 +5,16 @@ import {
   Headline,
   Subheadline,
   Section,
+  Input,
+  Button,
 } from '@telegram-apps/telegram-ui';
 import { Info, CarFront } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useWizardStore } from '@/ApplicationWizard/store/useWizardStore';
 
 import styles from './AutoStep.module.css';
+import { InputRangeModal } from './components/InputRangeSubstep';
 import { SelectSubstep } from './components/SelectSubstep';
 import { SubstepButton } from './components/SubstepButton';
 import { useAutoQueries } from './hooks/useAutoQueries';
@@ -26,6 +29,13 @@ export const AutoStep = () => {
   const { application, updateData, onSubstep, setOnSubstep } = useWizardStore();
   const [currentSubstep, setCurrentSubstep] = useState<AutoSubstep>(null);
   const isStepValid = application.auto.bodyType || application.auto.brand;
+
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'instant',
+    });
+  }, [onSubstep, currentSubstep]);
 
   const autoQueries = useAutoQueries();
 
@@ -76,6 +86,10 @@ export const AutoStep = () => {
       switch (prop) {
         case 'brand':
           newAutoData.model = null;
+          newAutoData.bodyType = null;
+          newAutoData.engineType = null;
+          newAutoData.gearType = null;
+          newAutoData.transmission = null;
         case 'model':
           newAutoData.generation = null;
         case 'generation':
@@ -89,6 +103,8 @@ export const AutoStep = () => {
     setCurrentSubstep(null);
     setOnSubstep(false);
   };
+
+  const [isPowerModalOpen, setIsPowerModalOpen] = useState(false);
 
   if (onSubstep && currentSubstep) {
     const config = SUBSTEP_GROUPS_CONFIG.flatMap((g) => g.configs).find(
@@ -137,7 +153,6 @@ export const AutoStep = () => {
               <Section
                 key={g.id}
                 header={g.title.toUpperCase()}
-                // Оставляем className только если нужно убрать внешние маржины самого Section
                 className={styles.groupContainer}
               >
                 <div className={styles.buttonsList}>
@@ -159,6 +174,44 @@ export const AutoStep = () => {
         </div>
       </div>
 
+      <Button onClick={() => setIsPowerModalOpen(true)}>asa</Button>
+      <InputRangeModal
+        isOpen={isPowerModalOpen}
+        header="Мощность двигателя"
+        unit="л.с."
+        initialFrom={'0'}
+        initialTo={'0'}
+        onClose={() => setIsPowerModalOpen(false)}
+        onSave={(_from, _to) => {
+          updateData({
+            auto: { ...application.auto },
+          });
+        }}
+      />
+      <Input
+        type="number"
+        header="Объём двигателя от (л.)"
+        placeholder="Объём двигателя от (л.)"
+        inputMode="decimal"
+      ></Input>
+      <Input
+        type="number"
+        header="Объём двигателя до (л.)"
+        placeholder="Объём двигателя до (л.)"
+        inputMode="decimal"
+      ></Input>
+      <Input
+        type="number"
+        header="Мощность двигателя от (л.с.)"
+        placeholder="Мощность двигателя от (л.с.)"
+        inputMode="decimal"
+      ></Input>
+      <Input
+        type="number"
+        header="Мощность двигателя до (л.с.)"
+        placeholder="Мощность двигателя до (л.с.)"
+        inputMode="decimal"
+      ></Input>
       <div
         className={`${styles.footerHint} ${isStepValid ? styles.hintValid : ''}`}
       >

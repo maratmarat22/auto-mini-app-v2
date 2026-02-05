@@ -1,7 +1,7 @@
 import type { AutoProp } from './types/prop&substep';
 import type { AutoData } from '@/ApplicationWizard/types/wizard';
 
-export interface SubstepData {
+export interface SubstepConfig {
   propToChange: AutoProp;
   searchHeader: string;
   searchPlaceholder: string;
@@ -14,7 +14,7 @@ export interface SubstepData {
 interface SubstepGroup {
   id: 'specific' | 'abstract';
   title: string;
-  configs: SubstepData[];
+  configs: SubstepConfig[];
 }
 
 export const SUBSTEP_CONFIG: SubstepGroup[] = [

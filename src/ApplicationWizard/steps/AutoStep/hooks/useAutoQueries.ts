@@ -81,13 +81,29 @@ export const useAutoQueries = () => {
   });
 
   const { data: gearTypes, isLoading: gearTypesAreLoading } = useQuery({
-    queryKey: ['gear-types'],
-    queryFn: autoApi.getGearTypes,
+    queryKey: [
+      'gear-types',
+      application.auto.bodyType?.id,
+      application.auto.brand?.id,
+      application.auto.model?.id,
+      application.auto.generation?.id,
+      application.auto.configuration?.id,
+      application.auto.modification?.id,
+    ],
+    queryFn: () => autoApi.getGearTypes(application.auto),
   });
 
   const { data: transmissions, isLoading: transmissionsAreLoading } = useQuery({
-    queryKey: ['transmissions'],
-    queryFn: autoApi.getTransmissions,
+    queryKey: [
+      'transmissions',
+      application.auto.bodyType?.id,
+      application.auto.brand?.id,
+      application.auto.model?.id,
+      application.auto.generation?.id,
+      application.auto.configuration?.id,
+      application.auto.modification?.id,
+    ],
+    queryFn: () => autoApi.getTransmissions(application.auto),
   });
 
   return {
