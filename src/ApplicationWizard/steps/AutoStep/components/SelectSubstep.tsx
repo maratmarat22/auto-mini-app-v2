@@ -6,13 +6,16 @@ import { CenterSpinner } from '@/ApplicationWizard/components/CenterSpinner/Cent
 
 import styles from './SelectSubstep.module.css';
 
-import type { AutoProp } from '../types/prop&substep';
+import type { SelectableAutoProp } from '../types/prop&substep';
 
 interface SelectSubstepProps {
   list: { id: string; name: string }[] | undefined;
   isLoading: boolean;
-  onSelect: (field: AutoProp, value: { id: string; name: string } | null) => void;
-  targetField: AutoProp;
+  onSelect: (
+    field: SelectableAutoProp,
+    value: { id: string; name: string } | null,
+  ) => void;
+  targetField: SelectableAutoProp;
   header: string;
   placeholder: string;
 }
@@ -28,7 +31,9 @@ export const SelectSubstep = ({
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   const filteredList = useMemo(() => {
-    return list?.filter((item) => item.name.toLowerCase().includes(searchQuery.toLowerCase()));
+    return list?.filter((item) =>
+      item.name.toLowerCase().includes(searchQuery.toLowerCase()),
+    );
   }, [searchQuery, list]);
 
   if (isLoading) return <CenterSpinner />;

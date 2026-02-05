@@ -3,9 +3,9 @@ import { ModalHeader } from '@telegram-apps/telegram-ui/dist/components/Overlays
 import { OctagonX } from 'lucide-react'; // Для кнопки очистки
 import { useState, useEffect } from 'react';
 
-import styles from './InputRangeModal.module.css';
+import styles from './RangeInputModal.module.css';
 
-interface InputRangeModalProps {
+interface RangeInputModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (from: string, to: string) => void;
@@ -15,7 +15,7 @@ interface InputRangeModalProps {
   unit?: string; // Например, "л." или "л.с."
 }
 
-export const InputRangeModal = ({
+export const RangeInputModal = ({
   isOpen,
   onClose,
   onSave,
@@ -23,7 +23,7 @@ export const InputRangeModal = ({
   initialTo = '',
   header,
   unit,
-}: InputRangeModalProps) => {
+}: RangeInputModalProps) => {
   const [from, setFrom] = useState(initialFrom);
   const [to, setTo] = useState(initialTo);
 

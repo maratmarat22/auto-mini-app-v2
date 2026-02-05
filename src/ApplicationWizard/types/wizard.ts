@@ -6,6 +6,9 @@ export interface AutoEntity {
 export interface AutoData {
   bodyType: AutoEntity | null;
   engineType: AutoEntity | null;
+  displacementFrom: number | null;
+  displacementTo: number | null;
+
   gearType: AutoEntity | null;
   transmission: AutoEntity | null;
 

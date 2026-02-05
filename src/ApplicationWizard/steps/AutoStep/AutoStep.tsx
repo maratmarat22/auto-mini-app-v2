@@ -5,8 +5,6 @@ import {
   Headline,
   Subheadline,
   Section,
-  Input,
-  Button,
 } from '@telegram-apps/telegram-ui';
 import { Info, CarFront } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -14,21 +12,31 @@ import { useEffect, useState } from 'react';
 import { useWizardStore } from '@/ApplicationWizard/store/useWizardStore';
 
 import styles from './AutoStep.module.css';
-import { InputRangeModal } from './components/InputRangeSubstep';
+import { RangeInputModal } from './components/RangeInputModal';
 import { SelectSubstep } from './components/SelectSubstep';
-import { SubstepButton } from './components/SubstepButton';
+import {
+  RangeInputSubstepButton,
+  SelectSubstepButton,
+} from './components/SubstepButton';
 import { useAutoQueries } from './hooks/useAutoQueries';
-import { SUBSTEP_CONFIG as SUBSTEP_GROUPS_CONFIG } from './substepsConfig';
+import {
+  SUBSTEPS_CONFIG,
+  type RangeInputSubstepConfig,
+  type SelectSubstepConfig,
+} from './substepsConfig';
 
 import '../steps.css';
 
-import type { AutoProp as AutoProp, AutoSubstep } from './types/prop&substep';
+import type { SelectableAutoProp, AutoSubstep } from './types/prop&substep';
 import type { AutoEntity } from '@/ApplicationWizard/types/wizard';
 
 export const AutoStep = () => {
   const { application, updateData, onSubstep, setOnSubstep } = useWizardStore();
   const [currentSubstep, setCurrentSubstep] = useState<AutoSubstep>(null);
   const isStepValid = application.auto.bodyType || application.auto.brand;
+
+  const [displacementModalVisible, setDisplacementModalVisible] =
+    useState(false);
 
   useEffect(() => {
     window.scrollTo({
@@ -78,7 +86,7 @@ export const AutoStep = () => {
     },
   };
 
-  const handleSelect = (prop: AutoProp, value: AutoEntity | null) => {
+  const handleSelect = (prop: SelectableAutoProp, value: AutoEntity | null) => {
     if (application.auto[prop]?.id !== value?.id) {
       const currentAuto = application.auto;
       const newAutoData = { ...currentAuto, [prop]: value };
@@ -104,14 +112,12 @@ export const AutoStep = () => {
     setOnSubstep(false);
   };
 
-  const [isPowerModalOpen, setIsPowerModalOpen] = useState(false);
-
   if (onSubstep && currentSubstep) {
-    const config = SUBSTEP_GROUPS_CONFIG.flatMap((g) => g.configs).find(
-      (i) => i.propToChange === currentSubstep,
-    );
+    const config = SUBSTEPS_CONFIG.find(
+      (c) => (c as SelectSubstepConfig).prop === currentSubstep,
+    ) as SelectSubstepConfig;
     if (!config) return null;
-    const { list, isLoading } = autoQueriesMap[config.propToChange];
+    const { list, isLoading } = autoQueriesMap[config.prop];
 
     return (
       <SelectSubstep
@@ -124,6 +130,20 @@ export const AutoStep = () => {
       />
     );
   }
+
+  const configsByGroup = SUBSTEPS_CONFIG.reduce(
+    (acc, sc) => {
+      const key = sc.group;
+      if (!acc[key]) {
+        acc[key] = [];
+      }
+      acc[key].push(sc);
+      return acc;
+    },
+    {} as Record<string, (SelectSubstepConfig | RangeInputSubstepConfig)[]>,
+  );
+
+  console.log(configsByGroup);
 
   return (
     <>
@@ -140,33 +160,51 @@ export const AutoStep = () => {
         </div>
 
         <div className={styles.groupsContainer}>
-          {SUBSTEP_GROUPS_CONFIG.map((g) => {
-            const visibleItems = g.configs.filter(
-              (i) => !i.isVisible || i.isVisible(application.auto),
+          {Object.entries(configsByGroup).map(([groupName, configs]) => {
+            const visibleConfigs = configs.filter(
+              (c) => !c.isVisible || c.isVisible(application.auto),
             );
 
-            if (visibleItems.length === 0) {
+            if (visibleConfigs.length === 0) {
               return null;
             }
 
             return (
               <Section
-                key={g.id}
-                header={g.title.toUpperCase()}
+                key={groupName}
+                header={
+                  configs[0].group === 'main'
+                    ? 'ОСНОВНАЯ ИНФОРМАЦИЯ'
+                    : 'ХАРАКТЕРИСТИКИ'
+                }
                 className={styles.groupContainer}
               >
                 <div className={styles.buttonsList}>
-                  {visibleItems.map((vi) => (
-                    <SubstepButton
-                      key={vi.propToChange}
-                      value={application.auto[vi.propToChange]}
-                      onClick={() => {
-                        setCurrentSubstep(vi.propToChange);
-                        setOnSubstep(true);
-                      }}
-                      text={vi.getButtonLabel(application.auto)}
-                    />
-                  ))}
+                  {visibleConfigs.map((c) => {
+                    if ('prop' in c) {
+                      return (
+                        <SelectSubstepButton
+                          key={c.prop}
+                          value={application.auto[c.prop]}
+                          onClick={() => {
+                            setCurrentSubstep(c.prop);
+                            setOnSubstep(true);
+                          }}
+                          text={c.getButtonLabel(application.auto)}
+                        />
+                      );
+                    } else if ('fromProp' in c) {
+                      return (
+                        <RangeInputSubstepButton
+                          key={c.fromProp}
+                          fromValue={application.auto[c.fromProp]}
+                          toValue={application.auto[c.toProp]}
+                          onClick={() => setDisplacementModalVisible(true)}
+                          text={c.getButtonLabel(application.auto)}
+                        />
+                      );
+                    }
+                  })}
                 </div>
               </Section>
             );
@@ -174,44 +212,6 @@ export const AutoStep = () => {
         </div>
       </div>
 
-      <Button onClick={() => setIsPowerModalOpen(true)}>asa</Button>
-      <InputRangeModal
-        isOpen={isPowerModalOpen}
-        header="Мощность двигателя"
-        unit="л.с."
-        initialFrom={'0'}
-        initialTo={'0'}
-        onClose={() => setIsPowerModalOpen(false)}
-        onSave={(_from, _to) => {
-          updateData({
-            auto: { ...application.auto },
-          });
-        }}
-      />
-      <Input
-        type="number"
-        header="Объём двигателя от (л.)"
-        placeholder="Объём двигателя от (л.)"
-        inputMode="decimal"
-      ></Input>
-      <Input
-        type="number"
-        header="Объём двигателя до (л.)"
-        placeholder="Объём двигателя до (л.)"
-        inputMode="decimal"
-      ></Input>
-      <Input
-        type="number"
-        header="Мощность двигателя от (л.с.)"
-        placeholder="Мощность двигателя от (л.с.)"
-        inputMode="decimal"
-      ></Input>
-      <Input
-        type="number"
-        header="Мощность двигателя до (л.с.)"
-        placeholder="Мощность двигателя до (л.с.)"
-        inputMode="decimal"
-      ></Input>
       <div
         className={`${styles.footerHint} ${isStepValid ? styles.hintValid : ''}`}
       >
@@ -227,6 +227,15 @@ export const AutoStep = () => {
           </Caption>
         </div>
       </div>
+
+      {displacementModalVisible && (
+        <RangeInputModal
+          isOpen={displacementModalVisible}
+          onClose={() => setDisplacementModalVisible(false)}
+          onSave={() => {}}
+          header="test"
+        />
+      )}
     </>
   );
 };
