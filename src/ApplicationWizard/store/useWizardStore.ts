@@ -24,6 +24,9 @@ export const useWizardStore = create<WizardStore>((set, get) => ({
       generation: null,
       configuration: null,
       modification: null,
+
+      displacementFrom: null,
+      displacementTo: null,
     },
   },
 
@@ -93,6 +96,9 @@ export const useWizardStore = create<WizardStore>((set, get) => ({
           generation: null,
           configuration: null,
           modification: null,
+
+          displacementFrom: null,
+          displacementTo: null,
         },
       },
     }),
