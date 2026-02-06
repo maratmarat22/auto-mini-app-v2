@@ -1,6 +1,12 @@
-import { Modal, Input, Button, Section } from '@telegram-apps/telegram-ui';
+import {
+  Modal,
+  Input,
+  Button,
+  List,
+  FixedLayout,
+} from '@telegram-apps/telegram-ui';
 import { ModalHeader } from '@telegram-apps/telegram-ui/dist/components/Overlays/Modal/components/ModalHeader/ModalHeader';
-import { OctagonX } from 'lucide-react'; // Для кнопки очистки
+import { OctagonX } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 import styles from './RangeInputModal.module.css';
@@ -27,7 +33,6 @@ export const RangeInputModal = ({
   const [from, setFrom] = useState(initialFrom);
   const [to, setTo] = useState(initialTo);
 
-  // Синхронизируем состояние при открытии
   useEffect(() => {
     if (isOpen) {
       setFrom(initialFrom);
@@ -40,23 +45,23 @@ export const RangeInputModal = ({
     onClose();
   };
 
-  const handleClear = () => {
-    setFrom('');
-    setTo('');
-  };
-
   return (
     <Modal
       open={isOpen}
-      onOpenChange={(open) => !open && onClose()}
+      onOpenChange={(open) => {
+        // Если фокус в инпуте, некоторые браузеры при закрытии клавиатуры
+        // дергают open change. Проверяем, что это реальное закрытие.
+        if (!open) onClose();
+      }}
       header={<ModalHeader>{header}</ModalHeader>}
     >
-      <div className={styles.modalContent}>
-        <Section className={styles.inputsSection}>
+      {/* Останавливаем всплытие тапов, чтобы модалка не думала, что кликнули по подложке */}
+      <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+        <List>
           <div className={styles.inputRow}>
             <Input
               header="От"
-              type="number"
+              type="text" // Используем text + inputMode для стабильности
               inputMode="decimal"
               placeholder={unit ? `0 ${unit}` : 'Минимум'}
               value={from}
@@ -74,7 +79,7 @@ export const RangeInputModal = ({
             <div className={styles.separator} />
             <Input
               header="До"
-              type="number"
+              type="text"
               inputMode="decimal"
               placeholder={unit ? `500 ${unit}` : 'Максимум'}
               value={to}
@@ -90,16 +95,27 @@ export const RangeInputModal = ({
               }
             />
           </div>
-        </Section>
 
-        <div className={styles.footer}>
-          <Button size="l" stretched onClick={handleSave}>
-            Применить
-          </Button>
-          <Button mode="bezeled" size="l" stretched onClick={handleClear}>
-            Сбросить
-          </Button>
-        </div>
+          {/* FixedLayout прижмет кнопки к нижней части видимой области (над клавиатурой) */}
+          <FixedLayout vertical="bottom" className={styles.fixedFooter}>
+            <div className={styles.footerButtons}>
+              <Button size="l" stretched onClick={handleSave}>
+                Применить
+              </Button>
+              <Button
+                mode="bezeled"
+                size="l"
+                stretched
+                onClick={() => {
+                  setFrom('');
+                  setTo('');
+                }}
+              >
+                Сбросить
+              </Button>
+            </div>
+          </FixedLayout>
+        </List>
       </div>
     </Modal>
   );

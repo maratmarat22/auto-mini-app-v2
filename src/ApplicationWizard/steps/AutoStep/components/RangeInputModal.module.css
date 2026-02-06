@@ -1,46 +1,46 @@
 .modalContent {
-  padding: 0 16px 32px 16px; /* Нижний отступ для безопасной зоны */
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.inputsSection {
-  background: transparent !important;
-  margin: 0 !important;
+  /* Резервируем место под фиксированные кнопки снизу */
+  padding: 0 16px 140px 16px;
+  position: relative;
+  min-height: 250px; /* Чтобы модалка не схлопнулась в ноль */
 }
 
 .inputRow {
   display: flex;
   align-items: flex-end;
-  gap: 12px;
+  gap: 8px;
+  padding-top: 12px;
 }
 
-.inputRow > div {
+/* Перебиваем стили библиотеки, чтобы инпуты не ломали флекс */
+.inputRow > :global(.tgui-internal--input) {
   flex: 1;
+  min-width: 0;
 }
 
 .separator {
-  width: 10px;
+  width: 12px;
   height: 2px;
   background: var(--tgui--outline);
-  margin-bottom: 24px; /* Выравнивание по центру полей ввода (без учета header) */
-  flex: none !important;
+  margin-bottom: 22px; /* Подбираем под базовую линию инпутов */
+  flex-shrink: 0;
 }
 
-.footer {
+.fixedFooter {
+  background: var(--tgui--bg_color); /* Или secondary_bg_color */
+  padding: 16px;
+  /* Важно для iOS, чтобы кнопки не налезали на Home Indicator */
+  padding-bottom: calc(16px + env(safe-area-inset-bottom));
+}
+
+.footerButtons {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin-top: 8px;
 }
 
 .clearIcon {
   color: var(--tgui--subtitle_text_color);
-  cursor: pointer;
-  opacity: 0.6;
-}
-
-.clearIcon:active {
-  opacity: 1;
+  padding: 4px; /* Увеличиваем область нажатия */
+  margin-right: -4px;
 }
