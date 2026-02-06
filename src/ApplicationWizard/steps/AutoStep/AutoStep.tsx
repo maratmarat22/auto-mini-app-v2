@@ -31,7 +31,8 @@ import type { SelectableAutoProp, AutoSubstep } from './types/prop&substep';
 import type { AutoEntity } from '@/ApplicationWizard/types/wizard';
 
 export const AutoStep = () => {
-  const { application, updateData, onSubstep, setOnSubstep } = useWizardStore();
+  const { application, updateData, onSubstep, setOnSubstep, setOnModal } =
+    useWizardStore();
   const [currentSubstep, setCurrentSubstep] = useState<AutoSubstep>(null);
   const isStepValid = application.auto.bodyType || application.auto.brand;
 
@@ -199,7 +200,10 @@ export const AutoStep = () => {
                           key={c.fromProp}
                           fromValue={application.auto[c.fromProp]}
                           toValue={application.auto[c.toProp]}
-                          onClick={() => setDisplacementModalVisible(true)}
+                          onClick={() => {
+                            setOnModal(true);
+                            setDisplacementModalVisible(true);
+                          }}
                           text={c.getButtonLabel(application.auto)}
                         />
                       );
@@ -231,9 +235,12 @@ export const AutoStep = () => {
       {displacementModalVisible && (
         <RangeInputModal
           isOpen={displacementModalVisible}
-          onClose={() => setDisplacementModalVisible(false)}
+          onClose={() => {
+            setOnModal(false);
+            setDisplacementModalVisible(false);
+          }}
           onSave={() => {}}
-          header="test"
+          header="Объём двигателя"
         />
       )}
     </>

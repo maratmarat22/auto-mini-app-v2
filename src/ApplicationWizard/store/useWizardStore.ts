@@ -10,6 +10,7 @@ export const useWizardStore = create<WizardStore>((set, get) => ({
   submitSuccessful: false,
   step: 1,
   onSubstep: false,
+  onModal: false,
   application: {
     budget: 0,
     comment: null,
@@ -33,8 +34,13 @@ export const useWizardStore = create<WizardStore>((set, get) => ({
   setStep: (step) => set({ step }),
 
   handleNextStep: async () => {
-    const currentStep = get().step;
-    if (currentStep === STEPS_CONFIG.length - 1) {
+    const state = get();
+
+    if (state.onModal) {
+      return set({ onModal: false });
+    }
+
+    if (state.step === STEPS_CONFIG.length - 1) {
       try {
         set({ submitPending: true });
         await autoApi.postApplication();
@@ -45,7 +51,7 @@ export const useWizardStore = create<WizardStore>((set, get) => ({
       } finally {
         set({ submitPending: false });
       }
-    } else if (currentStep === STEPS_CONFIG.length) {
+    } else if (state.step === STEPS_CONFIG.length) {
       console.log('exit');
     }
     set((state) => ({
@@ -75,6 +81,7 @@ export const useWizardStore = create<WizardStore>((set, get) => ({
     set((state) => ({ application: { ...state.application, ...newData } })),
 
   setOnSubstep: (onSubstep: boolean) => set({ onSubstep: onSubstep }),
+  setOnModal: (onModal: boolean) => set({ onModal: onModal }),
 
   reset: () =>
     set({
@@ -82,6 +89,7 @@ export const useWizardStore = create<WizardStore>((set, get) => ({
       submitSuccessful: false,
       step: 1,
       onSubstep: false,
+      onModal: false,
       application: {
         budget: 0,
         comment: null,

@@ -30,6 +30,7 @@ export interface WizardStore {
   submitSuccessful: boolean;
   step: number;
   onSubstep: boolean;
+  onModal: boolean;
   application: ApplicationData;
 
   setStep: (step: number) => void;
@@ -37,5 +38,6 @@ export interface WizardStore {
   handlePrevStep: () => void;
   updateData: (data: Partial<ApplicationData>) => void;
   setOnSubstep: (onSubstep: boolean) => void;
+  setOnModal: (onModal: boolean) => void;
   reset: () => void;
 }
