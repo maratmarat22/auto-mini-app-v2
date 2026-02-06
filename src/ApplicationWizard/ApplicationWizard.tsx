@@ -12,10 +12,10 @@ import {
 } from './steps';
 import { useWizardStore } from './store/useWizardStore';
 
-export const ApplicationWizard = ({ isMobile }: { isMobile: boolean }) => {
+export const ApplicationWizard = () => {
   const step = useWizardStore((state) => state.step);
   const lp = useLaunchParams();
-
+  const isMobile = lp.tgWebAppPlatform === 'ios';
   return (
     <div className={styles.mainContainer}>
       <div
@@ -23,7 +23,7 @@ export const ApplicationWizard = ({ isMobile }: { isMobile: boolean }) => {
           isMobile ? styles.headerContainerMobile : styles.headerContainer
         }
       >
-        {lp.tgWebAppPlatform}
+        {/* lp.tgWebAppPlatform */}
         <Header isMobile={isMobile} />
       </div>
       <main>

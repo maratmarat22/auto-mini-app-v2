@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 
+import { handleClose } from '@/main';
+
 import { autoApi } from '../api/autoApi';
 import { STEPS_CONFIG } from '../steps/stepsConfig';
 
@@ -52,7 +54,7 @@ export const useWizardStore = create<WizardStore>((set, get) => ({
         set({ submitPending: false });
       }
     } else if (state.step === STEPS_CONFIG.length) {
-      console.log('exit');
+      handleClose();
     }
     set((state) => ({
       onSubstep: false,
