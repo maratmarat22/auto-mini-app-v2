@@ -8,6 +8,20 @@ import './index.css';
 import '@telegram-apps/telegram-ui/dist/styles.css';
 import { ApplicationWizard } from './ApplicationWizard';
 
+// eslint-disable-next-line import/order
+import { init, retrieveLaunchParams } from '@tma.js/sdk-react';
+
+let lp;
+
+try {
+  init();
+  lp = retrieveLaunchParams();
+} catch (e) {
+  console.error(e);
+}
+
+const platform = lp?.tgWebAppPlatform;
+console.log(platform);
 const queryClient = new QueryClient();
 const ua = navigator.userAgent.toLowerCase();
 const isMobile = /iphone|ipad|ipod|android/.test(ua);

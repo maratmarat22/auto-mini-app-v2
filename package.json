@@ -12,6 +12,7 @@
   "dependencies": {
     "@tanstack/react-query": "^5.90.20",
     "@telegram-apps/telegram-ui": "^2.1.13",
+    "@tma.js/sdk-react": "^3.0.15",
     "axios": "^1.13.3",
     "framer-motion": "^12.29.0",
     "lucide-react": "^0.563.0",
