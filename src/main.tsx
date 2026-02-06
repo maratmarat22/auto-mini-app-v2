@@ -24,6 +24,9 @@ try {
       console.error('Ошибка при отправке ивента закрытия:', error);
     }
   };
+  if (lp.tgWebAppPlatform === 'ios' || lp.tgWebAppPlatform === 'android')
+    postEvent('web_app_request_fullscreen');
+  // postEvent('web_app_setup_swipe_behavior', { allow_vertical_swipe: false });
 } catch (e) {
   console.error(e);
 }

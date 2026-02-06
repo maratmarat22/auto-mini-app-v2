@@ -15,7 +15,11 @@ import { useWizardStore } from './store/useWizardStore';
 export const ApplicationWizard = () => {
   const step = useWizardStore((state) => state.step);
   const lp = useLaunchParams();
-  const isMobile = lp.tgWebAppPlatform === 'ios';
+  const isMobile =
+    lp.tgWebAppPlatform === 'ios' || lp.tgWebAppPlatform === 'android';
+
+  // const isMobile = true;
+
   return (
     <div className={styles.mainContainer}>
       <div
