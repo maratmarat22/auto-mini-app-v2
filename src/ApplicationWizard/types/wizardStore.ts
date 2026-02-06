@@ -3,15 +3,7 @@ export interface AutoEntity {
   name: string;
 }
 
-export interface AutoData {
-  bodyType: AutoEntity | null;
-  engineType: AutoEntity | null;
-  displacementFrom: number | null;
-  displacementTo: number | null;
-
-  gearType: AutoEntity | null;
-  transmission: AutoEntity | null;
-
+export interface SpecificAutoData {
   brand: AutoEntity | null;
   model: AutoEntity | null;
   generation: AutoEntity | null;
@@ -19,10 +11,22 @@ export interface AutoData {
   modification: AutoEntity | null;
 }
 
+export interface AbstractAutoData {
+  bodyType: AutoEntity | null;
+  engineType: AutoEntity | null;
+  displacementFrom: number | null;
+  displacementTo: number | null;
+
+  gearType: AutoEntity | null;
+  transmission: AutoEntity | null;
+}
+
 export interface ApplicationData {
   budget: number;
+  city: AutoEntity | null;
   comment: string | null;
-  auto: AutoData;
+  specificAutoData: SpecificAutoData;
+  abstractAutoData: AbstractAutoData;
 }
 
 export interface WizardStore {

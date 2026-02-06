@@ -5,7 +5,7 @@ import { handleClose } from '@/main';
 import { autoApi } from '../api/autoApi';
 import { STEPS_CONFIG } from '../steps/stepsConfig';
 
-import type { WizardStore } from '@/ApplicationWizard/types/wizard';
+import type { WizardStore } from '@/ApplicationWizard/types/wizardStore';
 
 export const useWizardStore = create<WizardStore>((set, get) => ({
   submitPending: false,
@@ -15,19 +15,20 @@ export const useWizardStore = create<WizardStore>((set, get) => ({
   onModal: false,
   application: {
     budget: 0,
+    city: null,
     comment: null,
-    auto: {
-      bodyType: null,
-      engineType: null,
-      gearType: null,
-      transmission: null,
-
+    specificAutoData: {
       brand: null,
       model: null,
       generation: null,
       configuration: null,
       modification: null,
-
+    },
+    abstractAutoData: {
+      bodyType: null,
+      engineType: null,
+      gearType: null,
+      transmission: null,
       displacementFrom: null,
       displacementTo: null,
     },
@@ -94,19 +95,20 @@ export const useWizardStore = create<WizardStore>((set, get) => ({
       onModal: false,
       application: {
         budget: 0,
+        city: null,
         comment: null,
-        auto: {
-          bodyType: null,
-          engineType: null,
-          gearType: null,
-          transmission: null,
-
+        specificAutoData: {
           brand: null,
           model: null,
           generation: null,
           configuration: null,
           modification: null,
-
+        },
+        abstractAutoData: {
+          bodyType: null,
+          engineType: null,
+          gearType: null,
+          transmission: null,
           displacementFrom: null,
           displacementTo: null,
         },

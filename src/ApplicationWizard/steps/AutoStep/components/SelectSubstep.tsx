@@ -6,35 +6,30 @@ import { CenterSpinner } from '@/ApplicationWizard/components/CenterSpinner/Cent
 
 import styles from './SelectSubstep.module.css';
 
-import type { SelectableAutoProp } from '../types/prop&substep';
-
 interface SelectSubstepProps {
-  list: { id: string; name: string }[] | undefined;
+  options: { id: string; name: string }[] | undefined;
   isLoading: boolean;
-  onSelect: (
-    field: SelectableAutoProp,
-    value: { id: string; name: string } | null,
-  ) => void;
-  targetField: SelectableAutoProp;
+  onSelect: (prop: string, value: { id: string; name: string } | null) => void;
+  propName: string;
   header: string;
   placeholder: string;
 }
 
 export const SelectSubstep = ({
-  list,
+  options,
   isLoading,
   onSelect,
-  targetField,
+  propName,
   placeholder,
   header,
 }: SelectSubstepProps) => {
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   const filteredList = useMemo(() => {
-    return list?.filter((item) =>
+    return options?.filter((item) =>
       item.name.toLowerCase().includes(searchQuery.toLowerCase()),
     );
-  }, [searchQuery, list]);
+  }, [searchQuery, options]);
 
   if (isLoading) return <CenterSpinner />;
 
@@ -64,9 +59,9 @@ export const SelectSubstep = ({
           {/* Кнопка сброса с иконкой корзины Lucide */}
           <Cell
             before={<Trash2 size={20} className={styles.iconDestructive} />}
-            onClick={() => onSelect(targetField, null)}
+            onClick={() => onSelect(propName, null)}
           >
-            <span className={styles.textDestructive}>Очистить выбор</span>
+            <span className={styles.textDestructive}>Сбросить</span>
           </Cell>
 
           {filteredList?.map((b) => (
@@ -74,7 +69,7 @@ export const SelectSubstep = ({
               key={b.id}
               hovered
               after={<ChevronRight size={16} className={styles.iconHint} />}
-              onClick={() => onSelect(targetField, { id: b.id, name: b.name })}
+              onClick={() => onSelect(propName, { id: b.id, name: b.name })}
             >
               {b.name}
             </Cell>

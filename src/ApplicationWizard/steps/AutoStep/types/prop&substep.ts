@@ -1,13 +1,17 @@
-import type { AutoData } from '@/ApplicationWizard/types/wizard';
+import type {
+  AbstractAutoData,
+  SpecificAutoData,
+} from '@/ApplicationWizard/types/wizardStore';
 
-export type SelectableAutoProp = Exclude<
-  keyof AutoData,
-  'displacementFrom' | 'displacementTo'
->;
+export type SpecificAutoDataProp = keyof SpecificAutoData;
 
-export type InputtableAutoProp = Extract<
-  keyof AutoData,
-  'displacementFrom' | 'displacementTo'
->;
+export type SelectableAutoDataProp =
+  | keyof SpecificAutoData
+  | Extract<keyof AbstractAutoData, 'bodyType'>;
 
-export type AutoSubstep = SelectableAutoProp | null;
+// export type InputtableAutoProp = Extract<
+//   keyof SpecificAutoData,
+//   'displacementFrom' | 'displacementTo'
+// >;
+
+export type AutoSubstep = SelectableAutoDataProp | null;

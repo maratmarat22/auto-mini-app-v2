@@ -1,66 +1,53 @@
 import { api } from '@/api/instance';
 
-import { type AutoData, type AutoEntity } from '../types/wizard';
-
-const extractQueryParams: (data: AutoData) => Record<string, string> = (
-  data: AutoData,
-) => {
-  const params: Record<string, string> = {};
-  for (const [key, value] of Object.entries(data)) {
-    if (value && typeof value === 'object' && 'id' in value) {
-      params[`${key}Id`] = (value as AutoEntity).id;
-    }
-  }
-
-  console.log(JSON.parse(JSON.stringify(params)));
-  return params;
-};
+import { type AutoEntity } from '../types/wizardStore';
 
 export const autoApi = {
-  getBrands: (data: AutoData) =>
+  getBrands: () => api.get<AutoEntity[]>('brands').then((res) => res.data),
+
+  getModels: (brandId: string) =>
     api
-      .get<AutoEntity[]>('brands', { params: extractQueryParams(data) })
+      .get<AutoEntity[]>('models', { params: { brandId: brandId } })
       .then((res) => res.data),
 
-  getModels: (data: AutoData) =>
+  getGenerations: (modelId: string) =>
     api
-      .get<AutoEntity[]>('models', { params: extractQueryParams(data) })
+      .get<AutoEntity[]>('generations', { params: { modelId: modelId } })
       .then((res) => res.data),
 
-  getGenerations: (data: AutoData) =>
+  getConfigurations: (generationId: string) =>
     api
-      .get<AutoEntity[]>('generations', { params: extractQueryParams(data) })
+      .get<
+        AutoEntity[]
+      >('configurations', { params: { generationId: generationId } })
       .then((res) => res.data),
 
-  getConfigurations: (data: AutoData) =>
+  getModifications: (configurationId: string) =>
     api
-      .get<AutoEntity[]>('configurations', { params: extractQueryParams(data) })
+      .get<
+        AutoEntity[]
+      >('modifications', { params: { configurationId: configurationId } })
       .then((res) => res.data),
 
-  getModifications: (data: AutoData) =>
-    api
-      .get<AutoEntity[]>('modifications', { params: extractQueryParams(data) })
-      .then((res) => res.data),
+  // getBodyTypes: (data: AutoData) =>
+  //   api
+  //     .get<AutoEntity[]>('body-types', { params: extractQueryParams(data) })
+  //     .then((res) => res.data),
 
-  getBodyTypes: (data: AutoData) =>
-    api
-      .get<AutoEntity[]>('body-types', { params: extractQueryParams(data) })
-      .then((res) => res.data),
+  // getEngineTypes: (data: AutoData) =>
+  //   api
+  //     .get<AutoEntity[]>('engine-types', { params: extractQueryParams(data) })
+  //     .then((res) => res.data),
 
-  getEngineTypes: (data: AutoData) =>
-    api
-      .get<AutoEntity[]>('engine-types', { params: extractQueryParams(data) })
-      .then((res) => res.data),
+  // getGearTypes: (data: AutoData) =>
+  //   api
+  //     .get<AutoEntity[]>('gear-types', { params: extractQueryParams(data) })
+  //     .then((res) => res.data),
 
-  getGearTypes: (data: AutoData) =>
-    api
-      .get<AutoEntity[]>('gear-types', { params: extractQueryParams(data) })
-      .then((res) => res.data),
-
-  getTransmissions: (data: AutoData) =>
-    api
-      .get<AutoEntity[]>('transmissions', { params: extractQueryParams(data) })
-      .then((res) => res.data),
+  // getTransmissions: (data: AutoData) =>
+  //   api
+  //     .get<AutoEntity[]>('transmissions', { params: extractQueryParams(data) })
+  //     .then((res) => res.data),
 
   postApplication: () => api.post('applications'),
 };

@@ -14,15 +14,15 @@ export const SubmitStep = () => {
         Ваша заявка:
       </StepHeader>
       <List>
-        <Cell>{wizardData.auto.brand?.name}</Cell>
-        <Cell>{wizardData.auto.model?.name}</Cell>
-        <Cell>{wizardData.auto.generation?.name}</Cell>
-        <Cell>{wizardData.auto.configuration?.name}</Cell>
-        <Cell>{wizardData.auto.modification?.name}</Cell>
-        <Cell>{wizardData.auto.bodyType?.name}</Cell>
-        <Cell>{wizardData.auto.engineType?.name}</Cell>
-        <Cell>{wizardData.auto.gearType?.name}</Cell>
-        <Cell>{wizardData.auto.transmission?.name}</Cell>
+        <Cell>{wizardData.specificAutoData.brand?.name}</Cell>
+        <Cell>{wizardData.specificAutoData.model?.name}</Cell>
+        <Cell>{wizardData.specificAutoData.generation?.name}</Cell>
+        <Cell>{wizardData.specificAutoData.configuration?.name}</Cell>
+        <Cell>{wizardData.specificAutoData.modification?.name}</Cell>
+        {/* <Cell>{wizardData.specificAutoData.bodyType?.name}</Cell>
+        <Cell>{wizardData.specificAutoData.engineType?.name}</Cell>
+        <Cell>{wizardData.specificAutoData.gearType?.name}</Cell>
+        <Cell>{wizardData.specificAutoData.transmission?.name}</Cell> */}
       </List>
     </div>
   );

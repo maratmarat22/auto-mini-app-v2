@@ -1,130 +1,169 @@
 import { useQuery } from '@tanstack/react-query';
+import { useEffect } from 'react';
 
 import { autoApi } from '@/ApplicationWizard/api/autoApi';
 import { useWizardStore } from '@/ApplicationWizard/store/useWizardStore';
 
+import type { AutoEntity } from '@/ApplicationWizard/types/wizardStore';
+
 export const useAutoQueries = () => {
-  const { application } = useWizardStore();
+  const { application, updateData } = useWizardStore();
+  const autoData = application.specificAutoData;
 
-  const { data: brands, isLoading: brandsAreLoading } = useQuery({
-    queryKey: [
-      'brands',
-      application.auto.bodyType?.id,
-      application.auto.engineType?.id,
-      application.auto.gearType?.id,
-      application.auto.transmission?.id,
-    ],
-    queryFn: () => {
-      return autoApi.getBrands(application.auto);
-    },
-  });
-
-  const { data: models, isLoading: modelsAreLoading } = useQuery({
-    queryKey: [
-      'models',
-      application.auto.brand?.id,
-      application.auto.bodyType?.id,
-    ],
-    queryFn: () => autoApi.getModels(application.auto),
-    enabled: !!application.auto.brand,
-  });
-
-  const { data: generations, isLoading: generationsAreLoading } = useQuery({
-    queryKey: [
-      'generations',
-      application.auto.model?.id,
-      application.auto.bodyType?.id,
-    ],
-    queryFn: () => autoApi.getGenerations(application.auto),
-    enabled: !!application.auto.model,
-  });
-
-  const { data: configurations, isLoading: configurationsAreLoading } =
-    useQuery({
-      queryKey: [
-        'configurations',
-        application.auto.generation?.id,
-        application.auto.bodyType?.id,
-      ],
-      queryFn: () => autoApi.getConfigurations(application.auto),
-      enabled: !!application.auto.generation,
+  const useAutoStepQuery = (
+    key: string,
+    dependencyId: string | undefined,
+    queryFn: (id: string) => Promise<AutoEntity[]>,
+    targetProp: keyof typeof autoData,
+  ) => {
+    const query = useQuery({
+      queryKey: [key, dependencyId],
+      queryFn: () => queryFn(dependencyId!),
+      enabled: !!dependencyId,
     });
 
-  const { data: modifications, isLoading: modificationsAreLoading } = useQuery({
-    queryKey: ['modifications', application.auto.configuration?.id],
-    queryFn: () => autoApi.getModifications(application.auto),
-    enabled: !!application.auto.configuration,
+    useEffect(() => {
+      if (query.data?.length === 1 && !autoData[targetProp]) {
+        updateData({
+          specificAutoData: { ...autoData, [targetProp]: query.data[0] },
+        });
+      }
+    }, [query.data, targetProp]);
+
+    return query;
+  };
+
+  const brandsQuery = useQuery({
+    queryKey: ['brands'],
+    queryFn: autoApi.getBrands,
   });
 
-  const { data: bodyTypes, isLoading: bodyTypesAreLoading } = useQuery({
-    queryKey: [
-      'body-types',
-      application.auto.brand?.id,
-      application.auto.model?.id,
-      application.auto.generation?.id,
-      application.auto.configuration?.id,
-    ],
-    queryFn: () => autoApi.getBodyTypes(application.auto),
-  });
+  const modelsQuery = useAutoStepQuery(
+    'models',
+    autoData.brand?.id,
+    autoApi.getModels,
+    'model',
+  );
+  const generationsQuery = useAutoStepQuery(
+    'generations',
+    autoData.model?.id,
+    autoApi.getGenerations,
+    'generation',
+  );
+  const configurationsQuery = useAutoStepQuery(
+    'configurations',
+    autoData.generation?.id,
+    autoApi.getConfigurations,
+    'configuration',
+  );
+  const modificationsQuery = useAutoStepQuery(
+    'modifications',
+    autoData.configuration?.id,
+    autoApi.getModifications,
+    'modification',
+  );
 
-  const { data: engineTypes, isLoading: engineTypesAreLoading } = useQuery({
-    queryKey: [
-      'engine-types',
-      application.auto.bodyType?.id,
-      application.auto.brand?.id,
-      application.auto.model?.id,
-      application.auto.generation?.id,
-      application.auto.configuration?.id,
-      application.auto.modification?.id,
-    ],
-    queryFn: () => autoApi.getEngineTypes(application.auto),
-  });
+  // const { data: models, isLoading: modelsAreLoading } = useQuery({
+  //   queryKey: ['models', application.specificAutoData.brand?.id],
+  //   queryFn: () => autoApi.getModels(application.specificAutoData.brand!.id),
+  //   enabled: !!application.specificAutoData.brand,
+  // });
 
-  const { data: gearTypes, isLoading: gearTypesAreLoading } = useQuery({
-    queryKey: [
-      'gear-types',
-      application.auto.bodyType?.id,
-      application.auto.brand?.id,
-      application.auto.model?.id,
-      application.auto.generation?.id,
-      application.auto.configuration?.id,
-      application.auto.modification?.id,
-    ],
-    queryFn: () => autoApi.getGearTypes(application.auto),
-  });
+  // const { data: generations, isLoading: generationsAreLoading } = useQuery({
+  //   queryKey: ['generations', application.specificAutoData.model?.id],
+  //   queryFn: () =>
+  //     autoApi.getGenerations(application.specificAutoData.model!.id),
+  //   enabled: !!application.specificAutoData.model,
+  // });
 
-  const { data: transmissions, isLoading: transmissionsAreLoading } = useQuery({
-    queryKey: [
-      'transmissions',
-      application.auto.bodyType?.id,
-      application.auto.brand?.id,
-      application.auto.model?.id,
-      application.auto.generation?.id,
-      application.auto.configuration?.id,
-      application.auto.modification?.id,
-    ],
-    queryFn: () => autoApi.getTransmissions(application.auto),
-  });
+  // const { data: configurations, isLoading: configurationsAreLoading } =
+  //   useQuery({
+  //     queryKey: ['configurations', application.specificAutoData.generation?.id],
+  //     queryFn: () =>
+  //       autoApi.getConfigurations(application.specificAutoData.generation!.id),
+  //     enabled: !!application.specificAutoData.generation,
+  //   });
+
+  // const { data: modifications, isLoading: modificationsAreLoading } = useQuery({
+  //   queryKey: ['modifications', application.specificAutoData.configuration?.id],
+  //   queryFn: () =>
+  //     autoApi.getModifications(application.specificAutoData.configuration!.id),
+  //   enabled: !!application.specificAutoData.configuration,
+  // });
+
+  // const { data: bodyTypes, isLoading: bodyTypesAreLoading } = useQuery({
+  //   queryKey: [
+  //     'body-types',
+  //     application.specificAutoData.brand?.id,
+  //     application.specificAutoData.model?.id,
+  //     application.specificAutoData.generation?.id,
+  //     application.specificAutoData.configuration?.id,
+  //   ],
+  //   queryFn: () => autoApi.getBodyTypes(application.specificAutoData),
+  // });
+
+  // const { data: engineTypes, isLoading: engineTypesAreLoading } = useQuery({
+  //   queryKey: [
+  //     'engine-types',
+  //     application.specificAutoData.bodyType?.id,
+  //     application.specificAutoData.brand?.id,
+  //     application.specificAutoData.model?.id,
+  //     application.specificAutoData.generation?.id,
+  //     application.specificAutoData.configuration?.id,
+  //     application.specificAutoData.modification?.id,
+  //   ],
+  //   queryFn: () => autoApi.getEngineTypes(application.specificAutoData),
+  // });
+
+  // const { data: gearTypes, isLoading: gearTypesAreLoading } = useQuery({
+  //   queryKey: [
+  //     'gear-types',
+  //     application.specificAutoData.bodyType?.id,
+  //     application.specificAutoData.brand?.id,
+  //     application.specificAutoData.model?.id,
+  //     application.specificAutoData.generation?.id,
+  //     application.specificAutoData.configuration?.id,
+  //     application.specificAutoData.modification?.id,
+  //   ],
+  //   queryFn: () => autoApi.getGearTypes(application.specificAutoData),
+  // });
+
+  // const { data: transmissions, isLoading: transmissionsAreLoading } = useQuery({
+  //   queryKey: [
+  //     'transmissions',
+  //     application.specificAutoData.bodyType?.id,
+  //     application.specificAutoData.brand?.id,
+  //     application.specificAutoData.model?.id,
+  //     application.specificAutoData.generation?.id,
+  //     application.specificAutoData.configuration?.id,
+  //     application.specificAutoData.modification?.id,
+  //   ],
+  //   queryFn: () => autoApi.getTransmissions(application.specificAutoData),
+  // });
 
   return {
-    brands,
-    brandsAreLoading,
-    models,
-    modelsAreLoading,
-    generations,
-    generationsAreLoading,
-    configurations,
-    configurationsAreLoading,
-    modifications,
-    modificationsAreLoading,
+    brands: brandsQuery.data,
+    brandsAreLoading: brandsQuery.isLoading,
 
-    bodyTypes,
-    bodyTypesAreLoading,
-    engineTypes,
-    engineTypesAreLoading,
-    gearTypes,
-    gearTypesAreLoading,
-    transmissions,
-    transmissionsAreLoading,
+    models: modelsQuery.data,
+    modelsAreLoading: modelsQuery.isLoading,
+
+    generations: generationsQuery.data,
+    generationsAreLoading: generationsQuery.isLoading,
+
+    configurations: configurationsQuery.data,
+    configurationsAreLoading: configurationsQuery.isLoading,
+
+    modifications: modificationsQuery.data,
+    modificationsAreLoading: modificationsQuery.isLoading,
+
+    // bodyTypes: bodyTypesQuery.data,
+    // bodyTypesAreLoading: bodyTypesQuery.isLoading,
+    // engineTypes: engineTypesQuery.data,
+    // engineTypesAreLoading: engineTypesQuery.isLoading,
+    // gearTypes: gearTypesQuery.data,
+    // gearTypesAreLoading: gearTypesQuery.isLoading,
+    // transmissions: transmissionsQuery.data,
+    // transmissionsAreLoading: transmissionsQuery.isLoading,
   };
 };

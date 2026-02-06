@@ -1,150 +1,131 @@
-/* eslint-disable no-fallthrough */
-import {
-  Caption,
-  Text,
-  Headline,
-  Subheadline,
-  Section,
-} from '@telegram-apps/telegram-ui';
-import { Info, CarFront } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { Headline, Subheadline, Section } from '@telegram-apps/telegram-ui';
+import { CarFront } from 'lucide-react';
+import { useEffect, useState, useMemo } from 'react';
 
 import { useWizardStore } from '@/ApplicationWizard/store/useWizardStore';
 
 import styles from './AutoStep.module.css';
 import { RangeInputModal } from './components/RangeInputModal';
 import { SelectSubstep } from './components/SelectSubstep';
-import {
-  RangeInputSubstepButton,
-  SelectSubstepButton,
-} from './components/SubstepButton';
+import { SelectSubstepButton } from './components/SubstepButton';
 import { useAutoQueries } from './hooks/useAutoQueries';
-import {
-  SUBSTEPS_CONFIG,
-  type RangeInputSubstepConfig,
-  type SelectSubstepConfig,
-} from './substepsConfig';
+import { SPECIFIC_SUBSTEP_CONFIGS } from './substepsConfig';
+
+import type { SpecificAutoDataProp } from './types/prop&substep';
+import type { AutoEntity } from '@/ApplicationWizard/types/wizardStore';
 
 import '../steps.css';
 
-import type { SelectableAutoProp, AutoSubstep } from './types/prop&substep';
-import type { AutoEntity } from '@/ApplicationWizard/types/wizard';
+// Порядок сброса зависимых полей
+const AUTO_FIELDS_CHAIN: SpecificAutoDataProp[] = [
+  'brand',
+  'model',
+  'generation',
+  'configuration',
+  'modification',
+];
 
 export const AutoStep = () => {
   const { application, updateData, onSubstep, setOnSubstep, setOnModal } =
     useWizardStore();
-  const [currentSubstep, setCurrentSubstep] = useState<AutoSubstep>(null);
-  const isStepValid = application.auto.bodyType || application.auto.brand;
-
+  const [currentSubstep, setCurrentSubstep] =
+    useState<SpecificAutoDataProp | null>(null);
   const [displacementModalVisible, setDisplacementModalVisible] =
     useState(false);
 
-  useEffect(() => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'instant',
-    });
-  }, [onSubstep, currentSubstep]);
-
   const autoQueries = useAutoQueries();
 
-  const autoQueriesMap = {
-    brand: {
-      list: autoQueries.brands,
-      isLoading: autoQueries.brandsAreLoading,
-    },
-    model: {
-      list: autoQueries.models,
-      isLoading: autoQueries.modelsAreLoading,
-    },
-    generation: {
-      list: autoQueries.generations,
-      isLoading: autoQueries.generationsAreLoading,
-    },
-    configuration: {
-      list: autoQueries.configurations,
-      isLoading: autoQueries.configurationsAreLoading,
-    },
-    modification: {
-      list: autoQueries.modifications,
-      isLoading: autoQueries.modificationsAreLoading,
-    },
-    bodyType: {
-      list: autoQueries.bodyTypes,
-      isLoading: autoQueries.bodyTypesAreLoading,
-    },
-    engineType: {
-      list: autoQueries.engineTypes,
-      isLoading: autoQueries.engineTypesAreLoading,
-    },
-    gearType: {
-      list: autoQueries.gearTypes,
-      isLoading: autoQueries.gearTypesAreLoading,
-    },
-    transmission: {
-      list: autoQueries.transmissions,
-      isLoading: autoQueries.transmissionsAreLoading,
-    },
-  };
+  // Автоматическое создание мапы из хука запросов
+  const autoQueriesMap = useMemo(
+    () => ({
+      brand: {
+        list: autoQueries.brands,
+        isLoading: autoQueries.brandsAreLoading,
+      },
+      model: {
+        list: autoQueries.models,
+        isLoading: autoQueries.modelsAreLoading,
+      },
+      generation: {
+        list: autoQueries.generations,
+        isLoading: autoQueries.generationsAreLoading,
+      },
+      configuration: {
+        list: autoQueries.configurations,
+        isLoading: autoQueries.configurationsAreLoading,
+      },
+      modification: {
+        list: autoQueries.modifications,
+        isLoading: autoQueries.modificationsAreLoading,
+      },
+      // bodyType: {
+      //   list: autoQueries.bodyTypes,
+      //   isLoading: autoQueries.bodyTypesAreLoading,
+      // },
+      // engineType: {
+      //   list: autoQueries.engineTypes,
+      //   isLoading: autoQueries.engineTypesAreLoading,
+      // },
+      // gearType: {
+      //   list: autoQueries.gearTypes,
+      //   isLoading: autoQueries.gearTypesAreLoading,
+      // },
+      // transmission: {
+      //   list: autoQueries.transmissions,
+      //   isLoading: autoQueries.transmissionsAreLoading,
+      // },
+    }),
+    [autoQueries],
+  );
 
-  const handleSelect = (prop: SelectableAutoProp, value: AutoEntity | null) => {
-    if (application.auto[prop]?.id !== value?.id) {
-      const currentAuto = application.auto;
-      const newAutoData = { ...currentAuto, [prop]: value };
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [onSubstep, currentSubstep]);
 
-      switch (prop) {
-        case 'brand':
-          newAutoData.model = null;
-          newAutoData.bodyType = null;
-          newAutoData.engineType = null;
-          newAutoData.gearType = null;
-          newAutoData.transmission = null;
-        case 'model':
-          newAutoData.generation = null;
-        case 'generation':
-          newAutoData.configuration = null;
-        case 'configuration':
-          newAutoData.modification = null;
-          break;
+  const handleSelect = (prop: string, value: AutoEntity | null) => {
+    if (
+      application.specificAutoData[prop as SpecificAutoDataProp]?.id !==
+      value?.id
+    ) {
+      const newAutoData = { ...application.specificAutoData, [prop]: value };
+
+      // Логика сброса зависимых полей
+      const fieldIndex = AUTO_FIELDS_CHAIN.indexOf(
+        prop as SpecificAutoDataProp,
+      );
+      if (fieldIndex !== -1) {
+        AUTO_FIELDS_CHAIN.slice(fieldIndex + 1).forEach((field) => {
+          newAutoData[field] = null;
+        });
       }
-      updateData({ auto: newAutoData });
+
+      updateData({ specificAutoData: newAutoData });
     }
+
     setCurrentSubstep(null);
     setOnSubstep(false);
   };
 
+  // Рендер режима выбора (Substep)
   if (onSubstep && currentSubstep) {
-    const config = SUBSTEPS_CONFIG.find(
-      (c) => (c as SelectSubstepConfig).prop === currentSubstep,
-    ) as SelectSubstepConfig;
-    if (!config) return null;
-    const { list, isLoading } = autoQueriesMap[config.prop];
-
-    return (
-      <SelectSubstep
-        list={list}
-        isLoading={isLoading}
-        onSelect={handleSelect}
-        targetField={currentSubstep}
-        header={config?.searchHeader || ''}
-        placeholder={config?.searchPlaceholder || ''}
-      />
+    const config = SPECIFIC_SUBSTEP_CONFIGS.find(
+      (c) => c.prop === currentSubstep,
     );
+    const query = autoQueriesMap[currentSubstep];
+
+    if (config && query) {
+      return (
+        <SelectSubstep
+          options={query.list}
+          isLoading={query.isLoading}
+          onSelect={handleSelect}
+          propName={currentSubstep}
+          header={config.searchHeader || ''}
+          placeholder={config.searchPlaceholder || ''}
+        />
+      );
+    }
   }
-
-  const configsByGroup = SUBSTEPS_CONFIG.reduce(
-    (acc, sc) => {
-      const key = sc.group;
-      if (!acc[key]) {
-        acc[key] = [];
-      }
-      acc[key].push(sc);
-      return acc;
-    },
-    {} as Record<string, (SelectSubstepConfig | RangeInputSubstepConfig)[]>,
-  );
-
-  console.log(configsByGroup);
 
   return (
     <>
@@ -161,88 +142,41 @@ export const AutoStep = () => {
         </div>
 
         <div className={styles.groupsContainer}>
-          {Object.entries(configsByGroup).map(([groupName, configs]) => {
-            const visibleConfigs = configs.filter(
-              (c) => !c.isVisible || c.isVisible(application.auto),
-            );
-
-            if (visibleConfigs.length === 0) {
-              return null;
-            }
-
-            return (
-              <Section
-                key={groupName}
-                header={
-                  configs[0].group === 'main'
-                    ? 'ОСНОВНАЯ ИНФОРМАЦИЯ'
-                    : 'ХАРАКТЕРИСТИКИ'
-                }
-                className={styles.groupContainer}
-              >
-                <div className={styles.buttonsList}>
-                  {visibleConfigs.map((c) => {
-                    if ('prop' in c) {
-                      return (
-                        <SelectSubstepButton
-                          key={c.prop}
-                          value={application.auto[c.prop]}
-                          onClick={() => {
-                            setCurrentSubstep(c.prop);
-                            setOnSubstep(true);
-                          }}
-                          text={c.getButtonLabel(application.auto)}
-                        />
-                      );
-                    } else if ('fromProp' in c) {
-                      return (
-                        <RangeInputSubstepButton
-                          key={c.fromProp}
-                          fromValue={application.auto[c.fromProp]}
-                          toValue={application.auto[c.toProp]}
-                          onClick={() => {
-                            setOnModal(true);
-                            setDisplacementModalVisible(true);
-                          }}
-                          text={c.getButtonLabel(application.auto)}
-                        />
-                      );
-                    }
-                  })}
-                </div>
-              </Section>
-            );
-          })}
+          <Section
+            header="ОСНОВНАЯ ИНФОРМАЦИЯ"
+            className={styles.groupContainer}
+          >
+            <div className={styles.buttonsList}>
+              {SPECIFIC_SUBSTEP_CONFIGS.map((c) => (
+                <SelectSubstepButton
+                  key={c.prop}
+                  value={application.specificAutoData[c.prop]}
+                  onClick={() => {
+                    setCurrentSubstep(c.prop);
+                    setOnSubstep(true);
+                  }}
+                  text={c.getButtonLabel(application.specificAutoData)}
+                  disabled={
+                    c.disabled
+                      ? c.disabled(application.specificAutoData)
+                      : false
+                  }
+                />
+              ))}
+            </div>
+          </Section>
         </div>
       </div>
 
-      <div
-        className={`${styles.footerHint} ${isStepValid ? styles.hintValid : ''}`}
-      >
-        <div className={styles.hintIconWrapper}>
-          <Info size={18} />
-        </div>
-        <div className={styles.hintContent}>
-          <Text weight="2" className={styles.hintTitle}>
-            Требование для шага
-          </Text>
-          <Caption className={styles.hintText}>
-            Необходимо выбрать хотя бы <b>марку</b> или <b>тип кузова</b>.
-          </Caption>
-        </div>
-      </div>
-
-      {displacementModalVisible && (
-        <RangeInputModal
-          isOpen={displacementModalVisible}
-          onClose={() => {
-            setOnModal(false);
-            setDisplacementModalVisible(false);
-          }}
-          onSave={() => {}}
-          header="Объём двигателя"
-        />
-      )}
+      <RangeInputModal
+        isOpen={displacementModalVisible}
+        onClose={() => {
+          setOnModal(false);
+          setDisplacementModalVisible(false);
+        }}
+        onSave={() => {}}
+        header="Объём двигателя"
+      />
     </>
   );
 };
