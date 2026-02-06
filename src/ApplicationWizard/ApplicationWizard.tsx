@@ -1,3 +1,5 @@
+import { useLaunchParams } from '@tma.js/sdk-react';
+
 import styles from './ApplicationWizard.module.css';
 import { Footer, Header } from './components';
 import {
@@ -12,6 +14,7 @@ import { useWizardStore } from './store/useWizardStore';
 
 export const ApplicationWizard = ({ isMobile }: { isMobile: boolean }) => {
   const step = useWizardStore((state) => state.step);
+  const lp = useLaunchParams();
 
   return (
     <div className={styles.mainContainer}>
@@ -20,6 +23,7 @@ export const ApplicationWizard = ({ isMobile }: { isMobile: boolean }) => {
           isMobile ? styles.headerContainerMobile : styles.headerContainer
         }
       >
+        {lp.tgWebAppPlatform}
         <Header isMobile={isMobile} />
       </div>
       <main>
